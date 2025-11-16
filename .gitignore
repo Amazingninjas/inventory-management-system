@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Production builds
+dist/
+build/
+.next/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+/tmp/
+
+# Vite
+.vite/
+frontend/node_modules/.vite/
+
+# Database (keep as example, but ignore any local changes)
+# backend/data/db.json
+
+# Tunneling
+ngrok
+ngrok.exe
+cloudflared
+*.ngrok-free.dev
+ngrok.yml
+
+# Temporary files
+*.tmp
+*.temp
