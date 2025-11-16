@@ -259,7 +259,6 @@ export default function Orders() {
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
           onComplete={handleCompleteOrder}
-          onRefresh={fetchOrders}
         />
       )}
     </div>
