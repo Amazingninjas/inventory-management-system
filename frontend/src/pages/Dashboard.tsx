@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { productAPI, orderAPI } from '../api';
-import { Product, Order } from '../types';
+import { Order } from '../types';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({

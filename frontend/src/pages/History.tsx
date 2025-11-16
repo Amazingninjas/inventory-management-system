@@ -209,13 +209,14 @@ export default function History() {
         <OrderDetailsModal
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
-          onComplete={async () => {
-            await fetchOrders();
-            setSelectedOrder(null);
-          }}
-          onDelete={async () => {
-            await fetchOrders();
-            setSelectedOrder(null);
+          onComplete={async (orderId) => {
+            try {
+              await orderAPI.complete(orderId);
+              await fetchOrders();
+              setSelectedOrder(null);
+            } catch (err: any) {
+              setError(err.response?.data?.message || 'Failed to complete order');
+            }
           }}
         />
       )}

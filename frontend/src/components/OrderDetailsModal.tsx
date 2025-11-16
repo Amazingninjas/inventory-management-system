@@ -4,10 +4,9 @@ interface OrderDetailsModalProps {
   order: Order;
   onClose: () => void;
   onComplete: (orderId: number) => void;
-  onRefresh: () => void;
 }
 
-export default function OrderDetailsModal({ order, onClose, onComplete, onRefresh }: OrderDetailsModalProps) {
+export default function OrderDetailsModal({ order, onClose, onComplete }: OrderDetailsModalProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'long',
