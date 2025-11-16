@@ -20,8 +20,9 @@ services:
   - type: web
     name: inventory-frontend
     runtime: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         sync: false  # Set in Render dashboard after backend is deployed
