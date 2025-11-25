@@ -1,102 +1,265 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Database, Product, Order } from './types';
+import { Database, Product, Order, User, ProductionCosts } from './types';
 
 const DB_FILE = path.join(__dirname, '../data/db.json');
 
 // Initialize with sample data
 const initialData: Database = {
-  products: [
+  users: [
     {
       id: 1,
-      name: 'Steel Sheet',
-      lot: 'RAW-001',
-      quantity: 500,
-      location: 'Warehouse A',
-      description: 'Cold-rolled steel sheets for manufacturing',
+      username: 'Demo',
+      password: 'Demo', // In production, this would be hashed
+      role: 'admin',
+      name: 'Demo User',
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  products: [
+    // ===== RAW MATERIALS =====
+    {
+      id: 1,
+      name: 'PET Film',
+      lot: 'RAW-FILM-001',
+      productType: 'raw',
+      unit: 'MSI',
+      quantity: 5000,
+      costPerUnit: 0.50,
+      location: 'Raw Materials - Bay 1',
+      description: 'Polyester film base material',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     {
       id: 2,
-      name: 'Screws (Box)',
-      lot: 'RAW-002',
-      quantity: 1000,
-      location: 'Warehouse A',
-      description: 'M6 screws, 100 per box',
+      name: 'Top-coat 581',
+      lot: 'RAW-TC581-001',
+      productType: 'raw',
+      unit: 'MSI',
+      quantity: 3000,
+      costPerUnit: 0.80,
+      location: 'Raw Materials - Bay 2',
+      description: 'Custom top-coat material for 581 series',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     {
       id: 3,
-      name: 'Wood Plank',
-      lot: 'RAW-003',
-      quantity: 300,
-      location: 'Warehouse B',
-      description: 'Oak planks 2x4',
+      name: 'Top-coat 582',
+      lot: 'RAW-TC582-001',
+      productType: 'raw',
+      unit: 'MSI',
+      quantity: 3000,
+      costPerUnit: 0.90,
+      location: 'Raw Materials - Bay 2',
+      description: 'Custom top-coat material for 582 series',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     {
       id: 4,
-      name: 'Paint (Gallon)',
-      lot: 'RAW-004',
-      quantity: 50,
-      location: 'Warehouse B',
-      description: 'White enamel paint',
+      name: 'Acrylic Adhesive 581',
+      lot: 'RAW-ADH581-001',
+      productType: 'raw',
+      unit: 'MSI',
+      quantity: 2500,
+      costPerUnit: 1.20,
+      location: 'Raw Materials - Bay 3',
+      description: 'Acrylic adhesive for 581 series',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     {
       id: 5,
-      name: 'Table',
-      lot: 'FIN-001',
-      quantity: 25,
-      location: 'Warehouse C',
-      description: 'Finished dining table',
+      name: 'Acrylic Adhesive 582',
+      lot: 'RAW-ADH582-001',
+      productType: 'raw',
+      unit: 'MSI',
+      quantity: 2500,
+      costPerUnit: 1.50,
+      location: 'Raw Materials - Bay 3',
+      description: 'Acrylic adhesive for 582 series',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     {
       id: 6,
-      name: 'Chair',
-      lot: 'FIN-002',
-      quantity: 100,
-      location: 'Warehouse C',
-      description: 'Finished dining chair',
+      name: 'Silicone Liner',
+      lot: 'RAW-LINER-001',
+      productType: 'raw',
+      unit: 'MSI',
+      quantity: 4000,
+      costPerUnit: 0.30,
+      location: 'Raw Materials - Bay 4',
+      description: 'Silicone release liner',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+
+    // ===== WIP: COATED FILM (Stage 1: Coating) =====
+    {
+      id: 7,
+      name: 'Coated Film 581-215',
+      lot: 'WIP-CF581-215',
+      productType: 'wip',
+      unit: 'MSI',
+      width: 21.5,
+      quantity: 0,
+      costPerUnit: 0, // Calculated from BOM
+      location: 'WIP - Coating Line',
+      description: 'PET Film with 581 top-coat applied, 21.5" wide',
+      laborCostPerUnit: 0.25,
+      bom: [
+        { productId: 1, productName: 'PET Film', productLot: 'RAW-FILM-001', quantity: 1 },
+        { productId: 2, productName: 'Top-coat 581', productLot: 'RAW-TC581-001', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 8,
+      name: 'Coated Film 582-22',
+      lot: 'WIP-CF582-22',
+      productType: 'wip',
+      unit: 'MSI',
+      width: 22,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'WIP - Coating Line',
+      description: 'PET Film with 582 top-coat applied, 22" wide',
+      laborCostPerUnit: 0.25,
+      bom: [
+        { productId: 1, productName: 'PET Film', productLot: 'RAW-FILM-001', quantity: 1 },
+        { productId: 3, productName: 'Top-coat 582', productLot: 'RAW-TC582-001', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+
+    // ===== WIP: COATED FILM W/ ADHESIVE (Stage 2: Adhesive Application) =====
+    {
+      id: 9,
+      name: 'Coated Film w/ Adhesive 581-215',
+      lot: 'WIP-CFA581-215',
+      productType: 'wip',
+      unit: 'MSI',
+      width: 21.5,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'WIP - Adhesive Line',
+      description: 'Coated Film 581 with adhesive applied, 21.5" wide',
+      laborCostPerUnit: 0.30,
+      bom: [
+        { productId: 7, productName: 'Coated Film 581-215', productLot: 'WIP-CF581-215', quantity: 1 },
+        { productId: 4, productName: 'Acrylic Adhesive 581', productLot: 'RAW-ADH581-001', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 10,
+      name: 'Coated Film w/ Adhesive 582-22',
+      lot: 'WIP-CFA582-22',
+      productType: 'wip',
+      unit: 'MSI',
+      width: 22,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'WIP - Adhesive Line',
+      description: 'Coated Film 582 with adhesive applied, 22" wide',
+      laborCostPerUnit: 0.30,
+      bom: [
+        { productId: 8, productName: 'Coated Film 582-22', productLot: 'WIP-CF582-22', quantity: 1 },
+        { productId: 5, productName: 'Acrylic Adhesive 582', productLot: 'RAW-ADH582-001', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+
+    // ===== WIP: MASTER ROLLS (Stage 3: Liner Application) =====
+    {
+      id: 11,
+      name: 'Master Roll 581-215',
+      lot: 'WIP-MR581-215',
+      productType: 'wip',
+      unit: 'MSI',
+      width: 21.5,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'WIP - Liner Line',
+      description: 'Complete PSM with liner, 21.5" wide, ready for cutting',
+      laborCostPerUnit: 0.20,
+      bom: [
+        { productId: 9, productName: 'Coated Film w/ Adhesive 581-215', productLot: 'WIP-CFA581-215', quantity: 1 },
+        { productId: 6, productName: 'Silicone Liner', productLot: 'RAW-LINER-001', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 12,
+      name: 'Master Roll 582-22',
+      lot: 'WIP-MR582-22',
+      productType: 'wip',
+      unit: 'MSI',
+      width: 22,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'WIP - Liner Line',
+      description: 'Complete PSM with liner, 22" wide, ready for cutting',
+      laborCostPerUnit: 0.20,
+      bom: [
+        { productId: 10, productName: 'Coated Film w/ Adhesive 582-22', productLot: 'WIP-CFA582-22', quantity: 1 },
+        { productId: 6, productName: 'Silicone Liner', productLot: 'RAW-LINER-001', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+
+    // ===== FINISHED GOODS (Stage 4: Cutting) =====
+    {
+      id: 13,
+      name: '581-215',
+      lot: 'FIN-581-215',
+      productType: 'finished',
+      unit: 'MSI',
+      width: 21.5,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'Finished Goods',
+      description: 'Finished PSM product 581-215, cut to customer specifications',
+      laborCostPerUnit: 0.15,
+      bom: [
+        { productId: 11, productName: 'Master Roll 581-215', productLot: 'WIP-MR581-215', quantity: 1 },
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 14,
+      name: '582-22',
+      lot: 'FIN-582-22',
+      productType: 'finished',
+      unit: 'MSI',
+      width: 22,
+      quantity: 0,
+      costPerUnit: 0,
+      location: 'Finished Goods',
+      description: 'Finished PSM product 582-22, cut to customer specifications',
+      laborCostPerUnit: 0.15,
+      bom: [
+        { productId: 12, productName: 'Master Roll 582-22', productLot: 'WIP-MR582-22', quantity: 1 },
+      ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
   ],
-  orders: [
-    {
-      id: 1,
-      orderNumber: 'ORD-001',
-      type: 'production',
-      status: 'pending',
-      inputs: [
-        {
-          productId: 1,
-          productName: 'Steel Sheet',
-          productLot: 'RAW-001',
-          quantity: 10,
-          location: 'Warehouse A',
-        },
-        {
-          productId: 2,
-          productName: 'Screws (Box)',
-          productLot: 'RAW-002',
-          quantity: 2,
-          location: 'Warehouse A',
-        },
-      ],
-      notes: 'Production run for table frames',
-      createdAt: new Date().toISOString(),
-    },
-  ],
-  nextProductId: 7,
-  nextOrderId: 2,
-  nextOrderNumber: 2,
+  orders: [],
+  nextUserId: 2,
+  nextProductId: 15,
+  nextOrderId: 1,
+  nextOrderNumber: 1,
 };
 
 // Ensure data directory exists
@@ -138,7 +301,20 @@ export function saveDatabase(db: Database): void {
   }
 }
 
-// Product operations
+// ===== USER OPERATIONS =====
+
+export function getUserByUsername(username: string): User | undefined {
+  const db = loadDatabase();
+  return db.users.find(u => u.username === username);
+}
+
+export function getUserById(id: number): User | undefined {
+  const db = loadDatabase();
+  return db.users.find(u => u.id === id);
+}
+
+// ===== PRODUCT OPERATIONS =====
+
 export function getAllProducts(): Product[] {
   const db = loadDatabase();
   return db.products;
@@ -248,7 +424,38 @@ export function createOrder(orderData: Omit<Order, 'id' | 'orderNumber' | 'creat
   return newOrder;
 }
 
-export function completeOrder(id: number): { order: Order; errors: string[] } {
+// Helper function to calculate production costs based on BOM
+function calculateProductionCosts(
+  product: Product,
+  quantity: number,
+  db: Database
+): { materialCost: number; laborCost: number; totalCost: number; costPerUnit: number } {
+  let materialCost = 0;
+  let laborCost = 0;
+
+  // Calculate material costs from BOM
+  if (product.bom && product.bom.length > 0) {
+    for (const bomItem of product.bom) {
+      const inputProduct = db.products.find(p => p.id === bomItem.productId);
+      if (inputProduct) {
+        // Material cost = input quantity per unit × output quantity × cost per unit of input
+        materialCost += bomItem.quantity * quantity * inputProduct.costPerUnit;
+      }
+    }
+  }
+
+  // Calculate labor cost
+  if (product.laborCostPerUnit) {
+    laborCost = product.laborCostPerUnit * quantity;
+  }
+
+  const totalCost = materialCost + laborCost;
+  const costPerUnit = quantity > 0 ? totalCost / quantity : 0;
+
+  return { materialCost, laborCost, totalCost, costPerUnit };
+}
+
+export function completeOrder(id: number, userId?: number): { order: Order; errors: string[] } {
   const db = loadDatabase();
   const orderIndex = db.orders.findIndex(o => o.id === id);
 
@@ -262,19 +469,22 @@ export function completeOrder(id: number): { order: Order; errors: string[] } {
     throw new Error(`Cannot complete order with status: ${order.status}`);
   }
 
-  // Validate inventory availability
   const errors: string[] = [];
-  for (const input of order.inputs) {
-    const product = db.products.find(p => p.id === input.productId);
-    if (!product) {
-      errors.push(`Product not found: ${input.productName} (ID: ${input.productId})`);
-      continue;
-    }
 
-    if (product.quantity < input.quantity) {
-      errors.push(
-        `Insufficient stock for ${product.name}: need ${input.quantity}, have ${product.quantity}`
-      );
+  // Validate inventory availability for inputs (if any)
+  if (order.inputs && order.inputs.length > 0) {
+    for (const input of order.inputs) {
+      const product = db.products.find(p => p.id === input.productId);
+      if (!product) {
+        errors.push(`Product not found: ${input.productName} (ID: ${input.productId})`);
+        continue;
+      }
+
+      if (product.quantity < input.quantity) {
+        errors.push(
+          `Insufficient stock for ${product.name}: need ${input.quantity} ${product.unit}, have ${product.quantity} ${product.unit}`
+        );
+      }
     }
   }
 
@@ -282,18 +492,83 @@ export function completeOrder(id: number): { order: Order; errors: string[] } {
     return { order, errors };
   }
 
-  // Deduct inventory
-  for (const input of order.inputs) {
-    const productIndex = db.products.findIndex(p => p.id === input.productId);
-    if (productIndex !== -1) {
-      db.products[productIndex].quantity -= input.quantity;
-      db.products[productIndex].updatedAt = new Date().toISOString();
+  // Process order based on type
+  let productionCosts: ProductionCosts | undefined;
+
+  if (order.orderType === 'purchase') {
+    // PURCHASE ORDER: Add outputs to inventory (receiving materials)
+    for (const output of order.outputs) {
+      const productIndex = db.products.findIndex(p => p.id === output.productId);
+      if (productIndex !== -1) {
+        db.products[productIndex].quantity += output.quantity;
+        db.products[productIndex].updatedAt = new Date().toISOString();
+      }
+    }
+  } else if (order.orderType === 'production') {
+    // PRODUCTION ORDER: Deduct inputs, add outputs, calculate costs
+
+    // Deduct inputs
+    for (const input of order.inputs) {
+      const productIndex = db.products.findIndex(p => p.id === input.productId);
+      if (productIndex !== -1) {
+        db.products[productIndex].quantity -= input.quantity;
+        db.products[productIndex].updatedAt = new Date().toISOString();
+      }
+    }
+
+    // Add outputs and calculate costs
+    let totalMaterialCost = 0;
+    let totalLaborCost = 0;
+    let totalOutputQuantity = 0;
+
+    for (const output of order.outputs) {
+      const productIndex = db.products.findIndex(p => p.id === output.productId);
+      if (productIndex !== -1) {
+        const product = db.products[productIndex];
+
+        // Calculate production costs for this output
+        const costs = calculateProductionCosts(product, output.quantity, db);
+        totalMaterialCost += costs.materialCost;
+        totalLaborCost += costs.laborCost;
+        totalOutputQuantity += output.quantity;
+
+        // Update product inventory and cost
+        db.products[productIndex].quantity += output.quantity;
+        db.products[productIndex].costPerUnit = costs.costPerUnit;
+        db.products[productIndex].updatedAt = new Date().toISOString();
+      }
+    }
+
+    // Store production costs on order
+    const totalCost = totalMaterialCost + totalLaborCost;
+    const costPerUnit = totalOutputQuantity > 0 ? totalCost / totalOutputQuantity : 0;
+
+    productionCosts = {
+      materialCost: totalMaterialCost,
+      laborCost: totalLaborCost,
+      totalCost,
+      costPerUnit,
+      // Variance calculation could be added here if standard costs are defined
+    };
+
+    db.orders[orderIndex].costs = productionCosts;
+  } else if (order.orderType === 'fulfillment') {
+    // FULFILLMENT ORDER: Deduct inputs (shipping out)
+    for (const input of order.inputs) {
+      const productIndex = db.products.findIndex(p => p.id === input.productId);
+      if (productIndex !== -1) {
+        db.products[productIndex].quantity -= input.quantity;
+        db.products[productIndex].updatedAt = new Date().toISOString();
+      }
     }
   }
 
   // Update order status
   db.orders[orderIndex].status = 'completed';
   db.orders[orderIndex].completedAt = new Date().toISOString();
+  if (userId) {
+    db.orders[orderIndex].completedBy = userId;
+  }
 
   saveDatabase(db);
 

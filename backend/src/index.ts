@@ -1,7 +1,7 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import * as db from './database';
-import { Product, Order } from './types';
+import { Product, Order, User } from './types';
 
 const app = express();
 const port = parseInt(process.env.PORT || '5000', 10);
@@ -17,6 +17,134 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+// Simple in-memory session store (in production, use Redis or JWT)
+interface Session {
+  userId: number;
+  username: string;
+  role: string;
+  createdAt: Date;
+}
+
+const sessions = new Map<string, Session>();
+
+// Generate simple session token
+function generateSessionToken(): string {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+// Middleware to check authentication
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  const session = sessions.get(token);
+
+  if (!session) {
+    return res.status(401).json({ message: 'Invalid or expired session' });
+  }
+
+  // Attach user info to request
+  (req as any).user = session;
+  next();
+}
+
+// Middleware to check role permissions
+function requireRole(...roles: string[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as any).user as Session | undefined;
+
+    if (!user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    if (!roles.includes(user.role)) {
+      return res.status(403).json({ message: 'Insufficient permissions' });
+    }
+
+    next();
+  };
+}
+
+// ===== AUTHENTICATION ENDPOINTS =====
+
+// Login
+app.post('/api/auth/login', (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    const user = db.getUserByUsername(username);
+
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+
+    // Create session
+    const token = generateSessionToken();
+    sessions.set(token, {
+      userId: user.id,
+      username: user.username,
+      role: user.role,
+      createdAt: new Date(),
+    });
+
+    // Return user info and token
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error during login', error: String(error) });
+  }
+});
+
+// Logout
+app.post('/api/auth/logout', requireAuth, (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (token) {
+      sessions.delete(token);
+    }
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error during logout', error: String(error) });
+  }
+});
+
+// Check session
+app.get('/api/auth/session', requireAuth, (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as Session;
+    const dbUser = db.getUserById(user.userId);
+
+    if (!dbUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: dbUser.id,
+        username: dbUser.username,
+        name: dbUser.name,
+        role: dbUser.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error checking session', error: String(error) });
+  }
+});
 
 // ===== PRODUCT ENDPOINTS =====
 
@@ -68,14 +196,26 @@ app.get('/api/products/:id', (req: Request, res: Response) => {
 });
 
 // Create product
-app.post('/api/products', (req: Request, res: Response) => {
+app.post('/api/products', requireAuth, (req: Request, res: Response) => {
   try {
-    const { name, lot, quantity, location, description } = req.body;
+    const {
+      name,
+      lot,
+      productType,
+      unit,
+      width,
+      quantity,
+      costPerUnit,
+      location,
+      description,
+      bom,
+      laborCostPerUnit,
+    } = req.body;
 
     // Validation
-    if (!name || !lot || quantity === undefined || !location) {
+    if (!name || !lot || !productType || !unit || quantity === undefined || costPerUnit === undefined || !location) {
       return res.status(400).json({
-        message: 'Missing required fields: name, lot, quantity, location are required',
+        message: 'Missing required fields: name, lot, productType, unit, quantity, costPerUnit, location are required',
       });
     }
 
@@ -83,33 +223,23 @@ app.post('/api/products', (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Quantity must be a non-negative number' });
     }
 
-    // Check if a product with the same name, lot, AND location exists
-    const existingProducts = db.getAllProducts();
-    const existingProduct = existingProducts.find(
-      p => p.name === name && p.lot === lot && p.location === location
-    );
-
-    if (existingProduct) {
-      // Consolidate: add quantity to existing product
-      const updatedProduct = db.updateProduct(existingProduct.id, {
-        quantity: existingProduct.quantity + quantity,
-        description: description || existingProduct.description, // Use new description if provided
-      });
-
-      return res.status(200).json({
-        message: 'Product consolidated with existing inventory',
-        product: updatedProduct,
-        consolidated: true,
-      });
+    if (typeof costPerUnit !== 'number' || costPerUnit < 0) {
+      return res.status(400).json({ message: 'Cost per unit must be a non-negative number' });
     }
 
     // No match found, create new product
     const newProduct = db.createProduct({
       name,
       lot,
+      productType,
+      unit,
+      width,
       quantity,
+      costPerUnit,
       location,
       description,
+      bom,
+      laborCostPerUnit,
     });
 
     res.status(201).json(newProduct);
@@ -119,7 +249,7 @@ app.post('/api/products', (req: Request, res: Response) => {
 });
 
 // Update product
-app.put('/api/products/:id', (req: Request, res: Response) => {
+app.put('/api/products/:id', requireAuth, (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -127,22 +257,41 @@ app.put('/api/products/:id', (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid product ID' });
     }
 
-    const { name, lot, quantity, location, description } = req.body;
+    const {
+      name,
+      lot,
+      productType,
+      unit,
+      width,
+      quantity,
+      costPerUnit,
+      location,
+      description,
+      bom,
+      laborCostPerUnit,
+    } = req.body;
 
     // Validate quantity if provided
     if (quantity !== undefined && (typeof quantity !== 'number' || quantity < 0)) {
       return res.status(400).json({ message: 'Quantity must be a non-negative number' });
     }
 
-    // No longer checking for duplicate lots - multiple products can have the same lot
-    // as long as they differ in name or location
+    if (costPerUnit !== undefined && (typeof costPerUnit !== 'number' || costPerUnit < 0)) {
+      return res.status(400).json({ message: 'Cost per unit must be a non-negative number' });
+    }
 
     const updatedProduct = db.updateProduct(id, {
       name,
       lot,
+      productType,
+      unit,
+      width,
       quantity,
+      costPerUnit,
       location,
       description,
+      bom,
+      laborCostPerUnit,
     });
 
     if (!updatedProduct) {
@@ -155,8 +304,8 @@ app.put('/api/products/:id', (req: Request, res: Response) => {
   }
 });
 
-// Delete product
-app.delete('/api/products/:id', (req: Request, res: Response) => {
+// Delete product (requires manager or admin role)
+app.delete('/api/products/:id', requireAuth, requireRole('manager', 'admin'), (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -213,65 +362,126 @@ app.get('/api/orders/:id', (req: Request, res: Response) => {
 });
 
 // Create order
-app.post('/api/orders', (req: Request, res: Response) => {
+app.post('/api/orders', requireAuth, (req: Request, res: Response) => {
   try {
-    const { type, inputs, notes } = req.body;
+    const { orderType, inputs, outputs, notes } = req.body;
+    const user = (req as any).user as Session;
 
     // Validation
-    if (!type || !inputs) {
+    if (!orderType) {
       return res.status(400).json({
-        message: 'Missing required fields: type and inputs are required',
+        message: 'Missing required field: orderType is required',
       });
     }
 
-    if (type !== 'production' && type !== 'fulfillment') {
+    if (orderType !== 'purchase' && orderType !== 'production' && orderType !== 'fulfillment') {
       return res.status(400).json({
-        message: 'Invalid order type. Must be "production" or "fulfillment"',
+        message: 'Invalid order type. Must be "purchase", "production", or "fulfillment"',
       });
     }
 
-    if (!Array.isArray(inputs) || inputs.length === 0) {
-      return res.status(400).json({
-        message: 'Inputs must be a non-empty array',
-      });
-    }
-
-    // Validate each input item
+    // Validate inputs (required for production and fulfillment)
     const validatedInputs = [];
-    for (const input of inputs) {
-      if (!input.productId || !input.quantity) {
+    if (inputs && Array.isArray(inputs) && inputs.length > 0) {
+      for (const input of inputs) {
+        if (!input.productId || !input.quantity) {
+          return res.status(400).json({
+            message: 'Each input must have productId and quantity',
+          });
+        }
+
+        if (typeof input.quantity !== 'number' || input.quantity <= 0) {
+          return res.status(400).json({
+            message: 'Input quantity must be a positive number',
+          });
+        }
+
+        // Fetch product details
+        const product = db.getProductById(input.productId);
+        if (!product) {
+          return res.status(404).json({
+            message: `Product not found: ID ${input.productId}`,
+          });
+        }
+
+        validatedInputs.push({
+          productId: product.id,
+          productName: product.name,
+          productLot: product.lot,
+          quantity: input.quantity,
+          location: product.location,
+          costPerUnit: product.costPerUnit,
+        });
+      }
+    }
+
+    // Validate outputs (required for purchase and production)
+    const validatedOutputs = [];
+    if (outputs && Array.isArray(outputs) && outputs.length > 0) {
+      for (const output of outputs) {
+        if (!output.productId || !output.quantity) {
+          return res.status(400).json({
+            message: 'Each output must have productId and quantity',
+          });
+        }
+
+        if (typeof output.quantity !== 'number' || output.quantity <= 0) {
+          return res.status(400).json({
+            message: 'Output quantity must be a positive number',
+          });
+        }
+
+        // Fetch product details
+        const product = db.getProductById(output.productId);
+        if (!product) {
+          return res.status(404).json({
+            message: `Product not found: ID ${output.productId}`,
+          });
+        }
+
+        validatedOutputs.push({
+          productId: product.id,
+          productName: product.name,
+          productLot: product.lot,
+          quantity: output.quantity,
+          location: product.location,
+          costPerUnit: product.costPerUnit,
+        });
+      }
+    }
+
+    // Type-specific validation
+    if (orderType === 'purchase' && validatedOutputs.length === 0) {
+      return res.status(400).json({
+        message: 'Purchase orders must have at least one output',
+      });
+    }
+
+    if (orderType === 'production') {
+      if (validatedInputs.length === 0) {
         return res.status(400).json({
-          message: 'Each input must have productId and quantity',
+          message: 'Production orders must have at least one input',
         });
       }
-
-      if (typeof input.quantity !== 'number' || input.quantity <= 0) {
+      if (validatedOutputs.length === 0) {
         return res.status(400).json({
-          message: 'Input quantity must be a positive number',
+          message: 'Production orders must have at least one output',
         });
       }
+    }
 
-      // Fetch product details
-      const product = db.getProductById(input.productId);
-      if (!product) {
-        return res.status(404).json({
-          message: `Product not found: ID ${input.productId}`,
-        });
-      }
-
-      validatedInputs.push({
-        productId: product.id,
-        productName: product.name,
-        productLot: product.lot,
-        quantity: input.quantity,
-        location: product.location,
+    if (orderType === 'fulfillment' && validatedInputs.length === 0) {
+      return res.status(400).json({
+        message: 'Fulfillment orders must have at least one input',
       });
     }
 
     const newOrder = db.createOrder({
-      type,
+      orderType,
       inputs: validatedInputs,
+      outputs: validatedOutputs,
       notes,
+      createdBy: user.userId,
     });
 
     res.status(201).json(newOrder);
@@ -281,15 +491,16 @@ app.post('/api/orders', (req: Request, res: Response) => {
 });
 
 // Complete order
-app.put('/api/orders/:id/complete', (req: Request, res: Response) => {
+app.put('/api/orders/:id/complete', requireAuth, (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
+    const user = (req as any).user as Session;
 
     if (isNaN(id)) {
       return res.status(400).json({ message: 'Invalid order ID' });
     }
 
-    const result = db.completeOrder(id);
+    const result = db.completeOrder(id, user.userId);
 
     if (result.errors.length > 0) {
       return res.status(400).json({

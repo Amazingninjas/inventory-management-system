@@ -1,6 +1,22 @@
 import { Link, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Layout() {
+  const { user, logout } = useAuth();
+
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'bg-purple-100 text-purple-800';
+      case 'manager':
+        return 'bg-blue-100 text-blue-800';
+      case 'operator':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -45,17 +61,21 @@ export default function Layout() {
               </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="flex items-center">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  className="w-64 px-4 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+            {/* User Info & Logout */}
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                  <p className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getRoleBadgeColor(user?.role || '')}`}>
+                    {user?.role?.toUpperCase()}
+                  </p>
+                </div>
+                <button
+                  onClick={logout}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
                   <svg
-                    className="w-5 h-5 text-gray-400"
+                    className="w-4 h-4 mr-2"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -64,10 +84,11 @@ export default function Layout() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                     />
                   </svg>
-                </div>
+                  Logout
+                </button>
               </div>
             </div>
           </div>

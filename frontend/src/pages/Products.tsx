@@ -82,6 +82,19 @@ export default function Products() {
     return { color: 'text-green-600 bg-green-100', label: 'In Stock' };
   };
 
+  const getProductTypeBadge = (type: string) => {
+    switch (type) {
+      case 'raw':
+        return 'bg-blue-100 text-blue-800';
+      case 'wip':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'finished':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -143,10 +156,16 @@ export default function Products() {
                 Product
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Lot
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Quantity
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Cost
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Location
@@ -159,7 +178,7 @@ export default function Products() {
           <tbody className="bg-white divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     <span className="ml-3">Loading products...</span>
@@ -168,7 +187,7 @@ export default function Products() {
               </tr>
             ) : filteredProducts.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                   {searchQuery ? 'No products found matching your search.' : 'No products yet. Create one to get started!'}
                 </td>
               </tr>
@@ -180,21 +199,35 @@ export default function Products() {
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                        {product.width && (
+                          <div className="text-xs text-gray-500">{product.width}" wide</div>
+                        )}
                         {product.description && (
                           <div className="text-sm text-gray-500">{product.description}</div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex text-xs font-semibold px-2 py-1 rounded-full ${getProductTypeBadge(product.productType)}`}>
+                        {product.productType.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-mono text-gray-900">{product.lot}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900">{product.quantity}</span>
+                        <span className="text-sm font-medium text-gray-900">{product.quantity} {product.unit}</span>
                         <span className={`inline-flex text-xs px-2 py-0.5 rounded-full ${stockStatus.color}`}>
                           {stockStatus.label}
                         </span>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">${product.costPerUnit.toFixed(2)}/{product.unit}</div>
+                      {product.laborCostPerUnit && (
+                        <div className="text-xs text-gray-500">Labor: ${product.laborCostPerUnit.toFixed(2)}</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.location}
