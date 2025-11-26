@@ -171,8 +171,8 @@ export default function History() {
                     <span className="text-sm font-medium text-gray-900">{order.orderNumber}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadge(order.type)}`}>
-                      {order.type.charAt(0).toUpperCase() + order.type.slice(1)}
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getTypeBadge(order.orderType)}`}>
+                      {order.orderType.charAt(0).toUpperCase() + order.orderType.slice(1)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

@@ -11,7 +11,10 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     lot: '',
+    productType: 'raw' as 'raw' | 'wip' | 'finished',
+    unit: 'units' as 'MSI' | 'feet' | 'lbs' | 'gallons' | 'units',
     quantity: 0,
+    costPerUnit: 0,
     location: '',
     description: '',
   });
@@ -23,7 +26,10 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
       setFormData({
         name: product.name,
         lot: product.lot,
+        productType: product.productType,
+        unit: product.unit,
         quantity: product.quantity,
+        costPerUnit: product.costPerUnit,
         location: product.location,
         description: product.description || '',
       });
@@ -81,11 +87,11 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'quantity' ? parseInt(value) || 0 : value,
+      [name]: name === 'quantity' || name === 'costPerUnit' ? parseFloat(value) || 0 : value,
     }));
     // Clear error for this field
     if (errors[name]) {
@@ -148,8 +154,47 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             {errors.lot && <p className="mt-1 text-sm text-red-600">{errors.lot}</p>}
           </div>
 
-          {/* Quantity and Location Row */}
+          {/* Product Type and Unit Row */}
           <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* Product Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="productType"
+                value={formData.productType}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="raw">Raw Material</option>
+                <option value="wip">Work in Progress</option>
+                <option value="finished">Finished Good</option>
+              </select>
+            </div>
+
+            {/* Unit */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Unit <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="unit"
+                value={formData.unit}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="MSI">MSI</option>
+                <option value="feet">Feet</option>
+                <option value="lbs">Pounds</option>
+                <option value="gallons">Gallons</option>
+                <option value="units">Units</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Quantity, Cost Per Unit, and Location Row */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
             {/* Quantity */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -161,12 +206,33 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 value={formData.quantity}
                 onChange={handleChange}
                 min="0"
+                step="0.01"
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.quantity ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="0"
               />
               {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>}
+            </div>
+
+            {/* Cost Per Unit */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cost Per Unit <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="costPerUnit"
+                value={formData.costPerUnit}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.costPerUnit ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="0.00"
+              />
+              {errors.costPerUnit && <p className="mt-1 text-sm text-red-600">{errors.costPerUnit}</p>}
             </div>
 
             {/* Location */}

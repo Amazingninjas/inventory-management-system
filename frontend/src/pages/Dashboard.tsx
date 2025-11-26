@@ -161,7 +161,7 @@ export default function Dashboard() {
                       <span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(order.status)}`}>
                         {order.status}
                       </span>
-                      <span className="text-sm text-gray-500 capitalize">{order.type}</span>
+                      <span className="text-sm text-gray-500 capitalize">{order.orderType}</span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
                       {order.inputs.length} item{order.inputs.length !== 1 ? 's' : ''}

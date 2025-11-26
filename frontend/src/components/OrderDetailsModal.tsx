@@ -60,7 +60,7 @@ export default function OrderDetailsModal({ order, onClose, onComplete }: OrderD
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Order Type</label>
-              <p className="text-base text-gray-900 capitalize">{order.type}</p>
+              <p className="text-base text-gray-900 capitalize">{order.orderType}</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Total Items</label>

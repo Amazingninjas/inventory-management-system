@@ -70,8 +70,9 @@ export default function OrderModal({ onClose }: OrderModalProps) {
       setErrors({});
 
       await orderAPI.create({
-        type: orderType,
+        orderType: orderType,
         inputs: inputs.filter(i => i.productId !== 0),
+        outputs: [],
         notes: notes || undefined,
       });
 
