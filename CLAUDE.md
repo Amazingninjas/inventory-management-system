@@ -256,3 +256,4 @@ When the order completes:
 - Coated Film 581-215 costPerUnit updated to $1.55
 
 This cost rolls up through subsequent stages, building the final product cost.
+- to memorize
