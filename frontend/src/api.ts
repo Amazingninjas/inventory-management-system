@@ -70,7 +70,7 @@ export const orderAPI = {
   getAll: () => api.get<Order[]>('/orders'),
   getById: (id: number) => api.get<Order>(`/orders/${id}`),
   create: (order: {
-    orderType: 'purchase' | 'production' | 'fulfillment';
+    orderType: 'purchase' | 'production' | 'fulfillment' | 'r&d';
     inputs: { productId: number; quantity: number }[];
     outputs: { productId: number; quantity: number }[];
     notes?: string;

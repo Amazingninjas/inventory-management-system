@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import History from './pages/History';
+import RD from './pages/RD';
+import Financials from './pages/Financials';
 import Login from './pages/Login';
 
 // Protected route wrapper
@@ -75,7 +77,9 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="rd" element={<RD />} />
             <Route path="history" element={<History />} />
+            <Route path="financials" element={<Financials />} />
           </Route>
         </Routes>
       </AuthProvider>
