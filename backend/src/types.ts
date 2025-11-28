@@ -60,12 +60,18 @@ export interface ProductionCosts {
   costPerUnit: number;
   standardCost?: number; // Expected cost per unit
   variance?: number; // Actual - standard (per unit)
+  // Maintenance-specific costs
+  stockPartsCost?: number;      // Extra stock parts not from inventory
+  // Sales-specific costs
+  travelCost?: number;           // Travel expenses
+  // Shipping-specific costs
+  carrierCost?: number;          // Freight/carrier costs
 }
 
 export interface Order {
   id: number;
   orderNumber: string;
-  orderType: 'purchase' | 'production' | 'fulfillment' | 'r&d';
+  orderType: 'purchase' | 'production' | 'fulfillment' | 'r&d' | 'maintenance' | 'sales' | 'shipping';
   status: 'pending' | 'completed' | 'cancelled';
   inputs: OrderItem[]; // Products consumed
   outputs: OrderItem[]; // Products produced/received

@@ -70,10 +70,14 @@ export const orderAPI = {
   getAll: () => api.get<Order[]>('/orders'),
   getById: (id: number) => api.get<Order>(`/orders/${id}`),
   create: (order: {
-    orderType: 'purchase' | 'production' | 'fulfillment' | 'r&d';
+    orderType: 'purchase' | 'production' | 'fulfillment' | 'r&d' | 'maintenance' | 'sales' | 'shipping';
     inputs: { productId: number; quantity: number }[];
     outputs: { productId: number; quantity: number }[];
     notes?: string;
+    stockPartsCost?: number;
+    travelCost?: number;
+    carrierCost?: number;
+    laborCost?: number;
   }) => api.post<Order>('/orders', order),
   complete: (id: number) => api.put(`/orders/${id}/complete`),
   delete: (id: number) => api.delete(`/orders/${id}`),

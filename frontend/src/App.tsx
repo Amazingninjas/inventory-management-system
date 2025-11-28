@@ -6,6 +6,9 @@ import Products from './pages/Products';
 import Orders from './pages/Orders';
 import History from './pages/History';
 import RD from './pages/RD';
+import Maintenance from './pages/Maintenance';
+import Sales from './pages/Sales';
+import Shipping from './pages/Shipping';
 import Financials from './pages/Financials';
 import Login from './pages/Login';
 
@@ -78,6 +81,9 @@ function App() {
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
             <Route path="rd" element={<RD />} />
+            <Route path="maintenance" element={<Maintenance />} />
+            <Route path="sales" element={<Sales />} />
+            <Route path="shipping" element={<Shipping />} />
             <Route path="history" element={<History />} />
             <Route path="financials" element={<Financials />} />
           </Route>

@@ -403,17 +403,39 @@ export function getOrderById(id: number): Order | undefined {
   return db.orders.find(o => o.id === id);
 }
 
-export function createOrder(orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'status'>): Order {
+export function createOrder(orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'status'> & {
+  extraCosts?: {
+    stockPartsCost?: number;
+    travelCost?: number;
+    carrierCost?: number;
+    laborCost?: number;
+  };
+}): Order {
   const db = loadDatabase();
 
   const orderNumber = `ORD-${String(db.nextOrderNumber).padStart(3, '0')}`;
 
+  // Extract extraCosts and create initial costs object if provided
+  const { extraCosts, ...restOrderData } = orderData;
+  const initialCosts = extraCosts && (extraCosts.stockPartsCost || extraCosts.travelCost || extraCosts.carrierCost || extraCosts.laborCost)
+    ? {
+        materialCost: 0,
+        laborCost: extraCosts.laborCost || 0,
+        totalCost: 0,
+        costPerUnit: 0,
+        stockPartsCost: extraCosts.stockPartsCost,
+        travelCost: extraCosts.travelCost,
+        carrierCost: extraCosts.carrierCost,
+      }
+    : undefined;
+
   const newOrder: Order = {
-    ...orderData,
+    ...restOrderData,
     id: db.nextOrderId,
     orderNumber,
     status: 'pending',
     createdAt: new Date().toISOString(),
+    costs: initialCosts,
   };
 
   db.orders.push(newOrder);
@@ -552,8 +574,8 @@ export function completeOrder(id: number, userId?: number): { order: Order; erro
     };
 
     db.orders[orderIndex].costs = productionCosts;
-  } else if (order.orderType === 'fulfillment') {
-    // FULFILLMENT ORDER: Deduct inputs (shipping out)
+  } else if (order.orderType === 'fulfillment' || order.orderType === 'r&d') {
+    // FULFILLMENT/R&D ORDER: Deduct inputs (shipping out / R&D usage)
     for (const input of order.inputs) {
       const productIndex = db.products.findIndex(p => p.id === input.productId);
       if (productIndex !== -1) {
@@ -561,6 +583,90 @@ export function completeOrder(id: number, userId?: number): { order: Order; erro
         db.products[productIndex].updatedAt = new Date().toISOString();
       }
     }
+
+    // For R&D, calculate material costs from inputs
+    if (order.orderType === 'r&d') {
+      let materialCost = 0;
+      for (const input of order.inputs) {
+        materialCost += (input.costPerUnit || 0) * input.quantity;
+      }
+
+      const laborCost = (order.costs?.laborCost || 0);
+      productionCosts = {
+        materialCost,
+        laborCost,
+        totalCost: materialCost + laborCost,
+        costPerUnit: 0,
+      };
+      db.orders[orderIndex].costs = productionCosts;
+    }
+  } else if (order.orderType === 'maintenance') {
+    // MAINTENANCE ORDER: Deduct inputs (parts used) + calculate costs
+    let materialCost = 0;
+
+    // Deduct parts used from inventory
+    for (const input of order.inputs) {
+      const productIndex = db.products.findIndex(p => p.id === input.productId);
+      if (productIndex !== -1) {
+        db.products[productIndex].quantity -= input.quantity;
+        db.products[productIndex].updatedAt = new Date().toISOString();
+        materialCost += (input.costPerUnit || 0) * input.quantity;
+      }
+    }
+
+    // Add stock parts cost (parts not from inventory)
+    const stockPartsCost = (order.costs?.stockPartsCost || 0);
+    const laborCost = (order.costs?.laborCost || 0);
+    const totalCost = materialCost + stockPartsCost + laborCost;
+
+    productionCosts = {
+      materialCost,
+      laborCost,
+      totalCost,
+      costPerUnit: 0,
+      stockPartsCost,
+    };
+    db.orders[orderIndex].costs = productionCosts;
+  } else if (order.orderType === 'sales') {
+    // SALES ORDER: No inventory changes, just track costs
+    const travelCost = (order.costs?.travelCost || 0);
+    const laborCost = (order.costs?.laborCost || 0);
+    const totalCost = travelCost + laborCost;
+
+    productionCosts = {
+      materialCost: 0,
+      laborCost,
+      totalCost,
+      costPerUnit: 0,
+      travelCost,
+    };
+    db.orders[orderIndex].costs = productionCosts;
+  } else if (order.orderType === 'shipping') {
+    // SHIPPING ORDER: Deduct packaging materials + calculate costs
+    let materialCost = 0;
+
+    // Deduct packaging materials from inventory
+    for (const input of order.inputs) {
+      const productIndex = db.products.findIndex(p => p.id === input.productId);
+      if (productIndex !== -1) {
+        db.products[productIndex].quantity -= input.quantity;
+        db.products[productIndex].updatedAt = new Date().toISOString();
+        materialCost += (input.costPerUnit || 0) * input.quantity;
+      }
+    }
+
+    const carrierCost = (order.costs?.carrierCost || 0);
+    const laborCost = (order.costs?.laborCost || 0);
+    const totalCost = materialCost + carrierCost + laborCost;
+
+    productionCosts = {
+      materialCost,
+      laborCost,
+      totalCost,
+      costPerUnit: 0,
+      carrierCost,
+    };
+    db.orders[orderIndex].costs = productionCosts;
   }
 
   // Update order status

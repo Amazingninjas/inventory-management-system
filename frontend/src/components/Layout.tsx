@@ -59,6 +59,24 @@ export default function Layout() {
                   R&D
                 </Link>
                 <Link
+                  to="/maintenance"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Maintenance
+                </Link>
+                <Link
+                  to="/sales"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Sales
+                </Link>
+                <Link
+                  to="/shipping"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Shipping
+                </Link>
+                <Link
                   to="/history"
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
