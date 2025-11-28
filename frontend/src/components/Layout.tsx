@@ -53,10 +53,22 @@ export default function Layout() {
                   Orders
                 </Link>
                 <Link
+                  to="/rd"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  R&D
+                </Link>
+                <Link
                   to="/history"
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   History
+                </Link>
+                <Link
+                  to="/financials"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Financials
                 </Link>
               </div>
             </div>

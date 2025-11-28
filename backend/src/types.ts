@@ -65,7 +65,7 @@ export interface ProductionCosts {
 export interface Order {
   id: number;
   orderNumber: string;
-  orderType: 'purchase' | 'production' | 'fulfillment';
+  orderType: 'purchase' | 'production' | 'fulfillment' | 'r&d';
   status: 'pending' | 'completed' | 'cancelled';
   inputs: OrderItem[]; // Products consumed
   outputs: OrderItem[]; // Products produced/received
