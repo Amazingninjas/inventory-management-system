@@ -364,7 +364,7 @@ app.get('/api/orders/:id', (req: Request, res: Response) => {
 // Create order
 app.post('/api/orders', requireAuth, (req: Request, res: Response) => {
   try {
-    const { orderType, inputs, outputs, notes } = req.body;
+    const { orderType, inputs, outputs, notes, stockPartsCost, travelCost, carrierCost, laborCost } = req.body;
     const user = (req as any).user as Session;
 
     // Validation
@@ -374,9 +374,10 @@ app.post('/api/orders', requireAuth, (req: Request, res: Response) => {
       });
     }
 
-    if (orderType !== 'purchase' && orderType !== 'production' && orderType !== 'fulfillment' && orderType !== 'r&d') {
+    const validOrderTypes = ['purchase', 'production', 'fulfillment', 'r&d', 'maintenance', 'sales', 'shipping'];
+    if (!validOrderTypes.includes(orderType)) {
       return res.status(400).json({
-        message: 'Invalid order type. Must be "purchase", "production", "fulfillment", or "r&d"',
+        message: 'Invalid order type. Must be one of: ' + validOrderTypes.join(', '),
       });
     }
 
@@ -482,6 +483,12 @@ app.post('/api/orders', requireAuth, (req: Request, res: Response) => {
       outputs: validatedOutputs,
       notes,
       createdBy: user.userId,
+      extraCosts: {
+        stockPartsCost: stockPartsCost || undefined,
+        travelCost: travelCost || undefined,
+        carrierCost: carrierCost || undefined,
+        laborCost: laborCost || undefined,
+      },
     });
 
     res.status(201).json(newOrder);
