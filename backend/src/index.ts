@@ -374,9 +374,9 @@ app.post('/api/orders', requireAuth, (req: Request, res: Response) => {
       });
     }
 
-    if (orderType !== 'purchase' && orderType !== 'production' && orderType !== 'fulfillment') {
+    if (orderType !== 'purchase' && orderType !== 'production' && orderType !== 'fulfillment' && orderType !== 'r&d') {
       return res.status(400).json({
-        message: 'Invalid order type. Must be "purchase", "production", or "fulfillment"',
+        message: 'Invalid order type. Must be "purchase", "production", "fulfillment", or "r&d"',
       });
     }
 
