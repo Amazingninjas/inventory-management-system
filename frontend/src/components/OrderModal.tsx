@@ -8,19 +8,19 @@ interface OrderModalProps {
 
 interface OrderInput {
   productId: number;
-  quantity: number;
+  quantity: string; // Keep as string for input handling
 }
 
 interface OrderOutput {
   productId: number;
-  quantity: number;
+  quantity: string; // Keep as string for input handling
 }
 
 export default function OrderModal({ onClose }: OrderModalProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [orderType, setOrderType] = useState<'purchase' | 'production' | 'fulfillment'>('production');
-  const [inputs, setInputs] = useState<OrderInput[]>([{ productId: 0, quantity: 0 }]);
-  const [outputs, setOutputs] = useState<OrderOutput[]>([{ productId: 0, quantity: 0 }]);
+  const [inputs, setInputs] = useState<OrderInput[]>([{ productId: 0, quantity: '' }]);
+  const [outputs, setOutputs] = useState<OrderOutput[]>([{ productId: 0, quantity: '' }]);
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,8 @@ export default function OrderModal({ onClose }: OrderModalProps) {
         if (!input.productId || input.productId === 0) {
           newErrors[`input_${index}_product`] = 'Please select a product';
         }
-        if (!input.quantity || input.quantity <= 0) {
+        const qty = parseFloat(input.quantity);
+        if (!input.quantity || isNaN(qty) || qty <= 0) {
           newErrors[`input_${index}_quantity`] = 'Quantity must be greater than 0';
         }
       });
@@ -73,7 +74,8 @@ export default function OrderModal({ onClose }: OrderModalProps) {
         if (!output.productId || output.productId === 0) {
           newErrors[`output_${index}_product`] = 'Please select a product';
         }
-        if (!output.quantity || output.quantity <= 0) {
+        const qty = parseFloat(output.quantity);
+        if (!output.quantity || isNaN(qty) || qty <= 0) {
           newErrors[`output_${index}_quantity`] = 'Quantity must be greater than 0';
         }
       });
@@ -100,8 +102,12 @@ export default function OrderModal({ onClose }: OrderModalProps) {
 
       await orderAPI.create({
         orderType: orderType,
-        inputs: needsInputs ? inputs.filter(i => i.productId !== 0) : [],
-        outputs: needsOutputs ? outputs.filter(o => o.productId !== 0) : [],
+        inputs: needsInputs
+          ? inputs.filter(i => i.productId !== 0).map(i => ({ ...i, quantity: parseFloat(i.quantity) }))
+          : [],
+        outputs: needsOutputs
+          ? outputs.filter(o => o.productId !== 0).map(o => ({ ...o, quantity: parseFloat(o.quantity) }))
+          : [],
         notes: notes || undefined,
       });
 
@@ -115,16 +121,20 @@ export default function OrderModal({ onClose }: OrderModalProps) {
   };
 
   const addInput = () => {
-    setInputs([...inputs, { productId: 0, quantity: 0 }]);
+    setInputs([...inputs, { productId: 0, quantity: '' }]);
   };
 
   const removeInput = (index: number) => {
     setInputs(inputs.filter((_, i) => i !== index));
   };
 
-  const updateInput = (index: number, field: 'productId' | 'quantity', value: number) => {
+  const updateInput = (index: number, field: 'productId' | 'quantity', value: number | string) => {
     const newInputs = [...inputs];
-    newInputs[index][field] = value;
+    if (field === 'quantity') {
+      newInputs[index][field] = value as string;
+    } else {
+      newInputs[index][field] = value as number;
+    }
     setInputs(newInputs);
     // Clear errors for this field
     if (errors[`input_${index}_${field}`]) {
@@ -144,16 +154,20 @@ export default function OrderModal({ onClose }: OrderModalProps) {
   };
 
   const addOutput = () => {
-    setOutputs([...outputs, { productId: 0, quantity: 0 }]);
+    setOutputs([...outputs, { productId: 0, quantity: '' }]);
   };
 
   const removeOutput = (index: number) => {
     setOutputs(outputs.filter((_, i) => i !== index));
   };
 
-  const updateOutput = (index: number, field: 'productId' | 'quantity', value: number) => {
+  const updateOutput = (index: number, field: 'productId' | 'quantity', value: number | string) => {
     const newOutputs = [...outputs];
-    newOutputs[index][field] = value;
+    if (field === 'quantity') {
+      newOutputs[index][field] = value as string;
+    } else {
+      newOutputs[index][field] = value as number;
+    }
     setOutputs(newOutputs);
     // Clear errors for this field
     if (errors[`output_${index}_${field}`]) {
@@ -297,15 +311,15 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                           min="0.0001"
                           step="0.0001"
                           value={input.quantity}
-                          onChange={(e) => updateInput(index, 'quantity', parseFloat(e.target.value) || 0)}
+                          onChange={(e) => updateInput(index, 'quantity', e.target.value)}
                           placeholder="MSI"
                           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                             errors[`input_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
                           }`}
                         />
-                        {input.quantity > 0 && input.productId > 0 && (
+                        {parseFloat(input.quantity) > 0 && input.productId > 0 && (
                           <p className="mt-1 text-xs text-gray-500">
-                            {calculateFootage(input.quantity, products.find(p => p.id === input.productId)?.width)?.toFixed(2)} feet
+                            {calculateFootage(parseFloat(input.quantity), products.find(p => p.id === input.productId)?.width)?.toFixed(2)} feet
                           </p>
                         )}
                         {errors[`input_${index}_quantity`] && (
@@ -389,15 +403,15 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                             min="0.0001"
                             step="0.0001"
                             value={output.quantity}
-                            onChange={(e) => updateOutput(index, 'quantity', parseFloat(e.target.value) || 0)}
+                            onChange={(e) => updateOutput(index, 'quantity', e.target.value)}
                             placeholder="MSI"
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                               errors[`output_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
-                          {output.quantity > 0 && output.productId > 0 && (
+                          {parseFloat(output.quantity) > 0 && output.productId > 0 && (
                             <p className="mt-1 text-xs text-gray-500">
-                              {calculateFootage(output.quantity, products.find(p => p.id === output.productId)?.width)?.toFixed(2)} feet
+                              {calculateFootage(parseFloat(output.quantity), products.find(p => p.id === output.productId)?.width)?.toFixed(2)} feet
                             </p>
                           )}
                           {errors[`output_${index}_quantity`] && (
