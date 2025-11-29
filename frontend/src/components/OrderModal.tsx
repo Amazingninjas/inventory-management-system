@@ -18,7 +18,7 @@ interface OrderOutput {
 
 export default function OrderModal({ onClose }: OrderModalProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [orderType, setOrderType] = useState<'purchase' | 'production' | 'fulfillment'>('production');
+  const [orderType, setOrderType] = useState<'purchase' | 'production' | 'fulfillment' | 'r&d' | 'maintenance' | 'sales' | 'shipping'>('production');
   const [inputs, setInputs] = useState<OrderInput[]>([{ productId: 0, quantity: '' }]);
   const [outputs, setOutputs] = useState<OrderOutput[]>([{ productId: 0, quantity: '' }]);
   const [notes, setNotes] = useState('');
@@ -46,7 +46,9 @@ export default function OrderModal({ onClose }: OrderModalProps) {
     const newErrors: Record<string, string> = {};
 
     // Validate based on order type
-    const needsInputs = orderType === 'production' || orderType === 'fulfillment';
+    const needsInputs = orderType === 'production' || orderType === 'fulfillment' ||
+                        orderType === 'r&d' || orderType === 'maintenance' ||
+                        orderType === 'sales' || orderType === 'shipping';
     const needsOutputs = orderType === 'production' || orderType === 'purchase';
 
     // Check inputs for production and fulfillment orders
@@ -97,7 +99,9 @@ export default function OrderModal({ onClose }: OrderModalProps) {
       setErrors({});
 
       // Determine which inputs/outputs to send based on order type
-      const needsInputs = orderType === 'production' || orderType === 'fulfillment';
+      const needsInputs = orderType === 'production' || orderType === 'fulfillment' ||
+                          orderType === 'r&d' || orderType === 'maintenance' ||
+                          orderType === 'sales' || orderType === 'shipping';
       const needsOutputs = orderType === 'production' || orderType === 'purchase';
 
       await orderAPI.create({
@@ -206,7 +210,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Create New Order</h2>
           <p className="text-sm text-gray-600 mt-1">
-            Purchase: Add to inventory • Production: Consume inputs, produce outputs • Fulfillment: Ship to customers
+            Select order type and specify materials (all quantities in MSI)
           </p>
         </div>
 
@@ -224,13 +228,13 @@ export default function OrderModal({ onClose }: OrderModalProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Order Type <span className="text-red-500">*</span>
             </label>
-            <div className="flex space-x-4">
+            <div className="grid grid-cols-4 gap-3">
               <label className="flex items-center">
                 <input
                   type="radio"
                   value="purchase"
                   checked={orderType === 'purchase'}
-                  onChange={(e) => setOrderType(e.target.value as 'purchase' | 'production' | 'fulfillment')}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
                   className="mr-2"
                 />
                 <span className="text-sm">Purchase</span>
@@ -240,7 +244,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                   type="radio"
                   value="production"
                   checked={orderType === 'production'}
-                  onChange={(e) => setOrderType(e.target.value as 'purchase' | 'production' | 'fulfillment')}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
                   className="mr-2"
                 />
                 <span className="text-sm">Production</span>
@@ -250,16 +254,56 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                   type="radio"
                   value="fulfillment"
                   checked={orderType === 'fulfillment'}
-                  onChange={(e) => setOrderType(e.target.value as 'purchase' | 'production' | 'fulfillment')}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
                   className="mr-2"
                 />
                 <span className="text-sm">Fulfillment</span>
               </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="r&d"
+                  checked={orderType === 'r&d'}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
+                  className="mr-2"
+                />
+                <span className="text-sm">R&D</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="maintenance"
+                  checked={orderType === 'maintenance'}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
+                  className="mr-2"
+                />
+                <span className="text-sm">Maintenance</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="sales"
+                  checked={orderType === 'sales'}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
+                  className="mr-2"
+                />
+                <span className="text-sm">Sales</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="shipping"
+                  checked={orderType === 'shipping'}
+                  onChange={(e) => setOrderType(e.target.value as typeof orderType)}
+                  className="mr-2"
+                />
+                <span className="text-sm">Shipping</span>
+              </label>
             </div>
           </div>
 
-          {/* Input Items - Show for Production and Fulfillment */}
-          {(orderType === 'production' || orderType === 'fulfillment') && (
+          {/* Input Items - Show for all except Purchase */}
+          {(orderType === 'production' || orderType === 'fulfillment' || orderType === 'r&d' || orderType === 'maintenance' || orderType === 'sales' || orderType === 'shipping') && (
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
                 <label className="block text-sm font-medium text-gray-700">

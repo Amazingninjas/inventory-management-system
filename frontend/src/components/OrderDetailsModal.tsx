@@ -1,4 +1,6 @@
-import { Order } from '../types';
+import { useState, useEffect } from 'react';
+import { Order, Product } from '../types';
+import { productAPI } from '../api';
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -7,6 +9,21 @@ interface OrderDetailsModalProps {
 }
 
 export default function OrderDetailsModal({ order, onClose, onComplete }: OrderDetailsModalProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await productAPI.getAll();
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'long',
@@ -15,6 +32,20 @@ export default function OrderDetailsModal({ order, onClose, onComplete }: OrderD
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  // Calculate footage from MSI: feet = MSI / (width × 0.012)
+  const calculateFootage = (msi: number, width?: number): number | null => {
+    if (!width || width <= 0) return null;
+    return msi / (width * 0.012);
+  };
+
+  // Format quantity with MSI and footage
+  const formatQuantity = (quantity: number, productId: number): string => {
+    const product = products.find(p => p.id === productId);
+    const footage = calculateFootage(quantity, product?.width);
+    const footageStr = footage ? ` (${footage.toFixed(2)} ft)` : '';
+    return `${quantity.toFixed(4)} MSI${footageStr}`;
   };
 
   const getStatusBadge = (status: string) => {
@@ -33,7 +64,8 @@ export default function OrderDetailsModal({ order, onClose, onComplete }: OrderD
     }
   };
 
-  const totalItems = order.inputs.reduce((sum, item) => sum + item.quantity, 0);
+  const totalInputs = order.inputs.reduce((sum, item) => sum + item.quantity, 0);
+  const totalOutputs = order.outputs.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -64,7 +96,7 @@ export default function OrderDetailsModal({ order, onClose, onComplete }: OrderD
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Total Items</label>
-              <p className="text-base text-gray-900">{totalItems}</p>
+              <p className="text-base text-gray-900">{totalInputs.toFixed(4)} MSI</p>
             </div>
           </div>
 
@@ -95,17 +127,50 @@ export default function OrderDetailsModal({ order, onClose, onComplete }: OrderD
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.productName}</td>
                       <td className="px-4 py-3 text-sm font-mono text-gray-600">{item.productLot}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{item.location}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">{item.quantity}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">{formatQuantity(item.quantity, item.productId)}</td>
                     </tr>
                   ))}
                   <tr className="bg-gray-50">
                     <td colSpan={3} className="px-4 py-3 text-sm font-semibold text-gray-900">Total</td>
-                    <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">{totalItems}</td>
+                    <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">{totalInputs.toFixed(4)} MSI</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+
+          {/* Output Items */}
+          {order.outputs && order.outputs.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Output Items</h3>
+              <div className="bg-gray-50 rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Product</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Lot</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Location</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase">Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {order.outputs.map((item, index) => (
+                      <tr key={index} className="bg-white">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.productName}</td>
+                        <td className="px-4 py-3 text-sm font-mono text-gray-600">{item.productLot}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{item.location}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">{formatQuantity(item.quantity, item.productId)}</td>
+                      </tr>
+                    ))}
+                    <tr className="bg-gray-50">
+                      <td colSpan={3} className="px-4 py-3 text-sm font-semibold text-gray-900">Total</td>
+                      <td className="px-4 py-3 text-sm font-bold text-gray-900 text-right">{totalOutputs.toFixed(4)} MSI</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Status Info */}
           {order.status === 'pending' && (
