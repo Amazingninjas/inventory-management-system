@@ -11,10 +11,16 @@ interface OrderInput {
   quantity: number;
 }
 
+interface OrderOutput {
+  productId: number;
+  quantity: number;
+}
+
 export default function OrderModal({ onClose }: OrderModalProps) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [orderType, setOrderType] = useState<'production' | 'fulfillment'>('production');
+  const [orderType, setOrderType] = useState<'purchase' | 'production' | 'fulfillment'>('production');
   const [inputs, setInputs] = useState<OrderInput[]>([{ productId: 0, quantity: 1 }]);
+  const [outputs, setOutputs] = useState<OrderOutput[]>([{ productId: 0, quantity: 1 }]);
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -39,20 +45,39 @@ export default function OrderModal({ onClose }: OrderModalProps) {
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    // Check if at least one input is provided
-    if (inputs.length === 0) {
-      newErrors.inputs = 'At least one input item is required';
+    // Validate based on order type
+    const needsInputs = orderType === 'production' || orderType === 'fulfillment';
+    const needsOutputs = orderType === 'production' || orderType === 'purchase';
+
+    // Check inputs for production and fulfillment orders
+    if (needsInputs) {
+      if (inputs.length === 0) {
+        newErrors.inputs = 'At least one input item is required';
+      }
+      inputs.forEach((input, index) => {
+        if (!input.productId || input.productId === 0) {
+          newErrors[`input_${index}_product`] = 'Please select a product';
+        }
+        if (!input.quantity || input.quantity <= 0) {
+          newErrors[`input_${index}_quantity`] = 'Quantity must be greater than 0';
+        }
+      });
     }
 
-    // Validate each input
-    inputs.forEach((input, index) => {
-      if (!input.productId || input.productId === 0) {
-        newErrors[`input_${index}_product`] = 'Please select a product';
+    // Check outputs for production and purchase orders
+    if (needsOutputs) {
+      if (outputs.length === 0) {
+        newErrors.outputs = 'At least one output item is required';
       }
-      if (!input.quantity || input.quantity <= 0) {
-        newErrors[`input_${index}_quantity`] = 'Quantity must be greater than 0';
-      }
-    });
+      outputs.forEach((output, index) => {
+        if (!output.productId || output.productId === 0) {
+          newErrors[`output_${index}_product`] = 'Please select a product';
+        }
+        if (!output.quantity || output.quantity <= 0) {
+          newErrors[`output_${index}_quantity`] = 'Quantity must be greater than 0';
+        }
+      });
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -69,10 +94,14 @@ export default function OrderModal({ onClose }: OrderModalProps) {
       setLoading(true);
       setErrors({});
 
+      // Determine which inputs/outputs to send based on order type
+      const needsInputs = orderType === 'production' || orderType === 'fulfillment';
+      const needsOutputs = orderType === 'production' || orderType === 'purchase';
+
       await orderAPI.create({
         orderType: orderType,
-        inputs: inputs.filter(i => i.productId !== 0),
-        outputs: [],
+        inputs: needsInputs ? inputs.filter(i => i.productId !== 0) : [],
+        outputs: needsOutputs ? outputs.filter(o => o.productId !== 0) : [],
         notes: notes || undefined,
       });
 
@@ -114,6 +143,35 @@ export default function OrderModal({ onClose }: OrderModalProps) {
     return products.filter(p => !selectedIds.includes(p.id));
   };
 
+  const addOutput = () => {
+    setOutputs([...outputs, { productId: 0, quantity: 1 }]);
+  };
+
+  const removeOutput = (index: number) => {
+    setOutputs(outputs.filter((_, i) => i !== index));
+  };
+
+  const updateOutput = (index: number, field: 'productId' | 'quantity', value: number) => {
+    const newOutputs = [...outputs];
+    newOutputs[index][field] = value;
+    setOutputs(newOutputs);
+    // Clear errors for this field
+    if (errors[`output_${index}_${field}`]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[`output_${index}_${field}`];
+        return newErrors;
+      });
+    }
+  };
+
+  const getAvailableOutputProducts = (currentIndex: number) => {
+    const selectedIds = outputs
+      .map((o, idx) => (idx !== currentIndex ? o.productId : null))
+      .filter(id => id !== null && id !== 0);
+    return products.filter(p => !selectedIds.includes(p.id));
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
@@ -121,7 +179,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">Create New Order</h2>
           <p className="text-sm text-gray-600 mt-1">
-            Select products to consume from inventory (inputs only for now)
+            Purchase: Add to inventory • Production: Consume inputs, produce outputs • Fulfillment: Ship to customers
           </p>
         </div>
 
@@ -143,9 +201,19 @@ export default function OrderModal({ onClose }: OrderModalProps) {
               <label className="flex items-center">
                 <input
                   type="radio"
+                  value="purchase"
+                  checked={orderType === 'purchase'}
+                  onChange={(e) => setOrderType(e.target.value as 'purchase' | 'production' | 'fulfillment')}
+                  className="mr-2"
+                />
+                <span className="text-sm">Purchase</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
                   value="production"
                   checked={orderType === 'production'}
-                  onChange={(e) => setOrderType(e.target.value as 'production')}
+                  onChange={(e) => setOrderType(e.target.value as 'purchase' | 'production' | 'fulfillment')}
                   className="mr-2"
                 />
                 <span className="text-sm">Production</span>
@@ -155,7 +223,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                   type="radio"
                   value="fulfillment"
                   checked={orderType === 'fulfillment'}
-                  onChange={(e) => setOrderType(e.target.value as 'fulfillment')}
+                  onChange={(e) => setOrderType(e.target.value as 'purchase' | 'production' | 'fulfillment')}
                   className="mr-2"
                 />
                 <span className="text-sm">Fulfillment</span>
@@ -163,12 +231,13 @@ export default function OrderModal({ onClose }: OrderModalProps) {
             </div>
           </div>
 
-          {/* Input Items */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <label className="block text-sm font-medium text-gray-700">
-                Input Items <span className="text-red-500">*</span>
-              </label>
+          {/* Input Items - Show for Production and Fulfillment */}
+          {(orderType === 'production' || orderType === 'fulfillment') && (
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Input Items <span className="text-red-500">*</span>
+                </label>
               <button
                 type="button"
                 onClick={addInput}
@@ -246,6 +315,93 @@ export default function OrderModal({ onClose }: OrderModalProps) {
               </div>
             )}
           </div>
+          )}
+
+          {/* Output Items - Show for Purchase and Production */}
+          {(orderType === 'purchase' || orderType === 'production') && (
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Output Items <span className="text-red-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={addOutput}
+                  className="text-sm text-blue-600 hover:text-blue-700"
+                  disabled={loadingProducts}
+                >
+                  + Add Item
+                </button>
+              </div>
+
+              {loadingProducts ? (
+                <div className="text-center py-4 text-gray-500">Loading products...</div>
+              ) : (
+                <div className="space-y-3">
+                  {outputs.map((output, index) => {
+                    const availableProducts = getAvailableOutputProducts(index);
+                    return (
+                      <div key={index} className="flex items-start space-x-3">
+                        {/* Product Select */}
+                        <div className="flex-1">
+                          <select
+                            value={output.productId}
+                            onChange={(e) => updateOutput(index, 'productId', parseInt(e.target.value))}
+                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors[`output_${index}_product`] ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          >
+                            <option value={0}>Select a product...</option>
+                            {availableProducts.map((product) => (
+                              <option key={product.id} value={product.id}>
+                                {product.name} ({product.lot}) - Current: {product.quantity}
+                              </option>
+                            ))}
+                          </select>
+                          {errors[`output_${index}_product`] && (
+                            <p className="mt-1 text-xs text-red-600">{errors[`output_${index}_product`]}</p>
+                          )}
+                        </div>
+
+                        {/* Quantity Input */}
+                        <div className="w-32">
+                          <input
+                            type="number"
+                            min="1"
+                            value={output.quantity}
+                            onChange={(e) => updateOutput(index, 'quantity', parseInt(e.target.value) || 0)}
+                            placeholder="Qty"
+                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors[`output_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          />
+                          {errors[`output_${index}_quantity`] && (
+                            <p className="mt-1 text-xs text-red-600">{errors[`output_${index}_quantity`]}</p>
+                          )}
+                        </div>
+
+                        {/* Remove Button */}
+                        {outputs.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeOutput(index)}
+                            className="p-2 text-red-600 hover:text-red-900"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {errors.outputs && (
+                    <p className="text-sm text-red-600">{errors.outputs}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Notes */}
           <div className="mb-6">
