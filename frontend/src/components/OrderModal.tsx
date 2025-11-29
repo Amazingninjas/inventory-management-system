@@ -19,8 +19,8 @@ interface OrderOutput {
 export default function OrderModal({ onClose }: OrderModalProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [orderType, setOrderType] = useState<'purchase' | 'production' | 'fulfillment'>('production');
-  const [inputs, setInputs] = useState<OrderInput[]>([{ productId: 0, quantity: 1 }]);
-  const [outputs, setOutputs] = useState<OrderOutput[]>([{ productId: 0, quantity: 1 }]);
+  const [inputs, setInputs] = useState<OrderInput[]>([{ productId: 0, quantity: 0 }]);
+  const [outputs, setOutputs] = useState<OrderOutput[]>([{ productId: 0, quantity: 0 }]);
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -115,7 +115,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
   };
 
   const addInput = () => {
-    setInputs([...inputs, { productId: 0, quantity: 1 }]);
+    setInputs([...inputs, { productId: 0, quantity: 0 }]);
   };
 
   const removeInput = (index: number) => {
@@ -144,7 +144,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
   };
 
   const addOutput = () => {
-    setOutputs([...outputs, { productId: 0, quantity: 1 }]);
+    setOutputs([...outputs, { productId: 0, quantity: 0 }]);
   };
 
   const removeOutput = (index: number) => {
@@ -170,6 +170,19 @@ export default function OrderModal({ onClose }: OrderModalProps) {
       .map((o, idx) => (idx !== currentIndex ? o.productId : null))
       .filter(id => id !== null && id !== 0);
     return products.filter(p => !selectedIds.includes(p.id));
+  };
+
+  // Calculate footage from MSI: feet = MSI / (width × 0.012)
+  const calculateFootage = (msi: number, width?: number): number | null => {
+    if (!width || width <= 0) return null;
+    return msi / (width * 0.012);
+  };
+
+  // Format footage display
+  const formatFootage = (msi: number, width?: number): string => {
+    const feet = calculateFootage(msi, width);
+    if (feet === null) return '';
+    return ` (${feet.toFixed(2)} ft)`;
   };
 
   return (
@@ -268,7 +281,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                           <option value={0}>Select a product...</option>
                           {availableProducts.map((product) => (
                             <option key={product.id} value={product.id}>
-                              {product.name} ({product.lot}) - Available: {product.quantity}
+                              {product.name} ({product.lot}) - Available: {product.quantity.toFixed(4)} MSI{formatFootage(product.quantity, product.width)}
                             </option>
                           ))}
                         </select>
@@ -278,17 +291,23 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                       </div>
 
                       {/* Quantity Input */}
-                      <div className="w-32">
+                      <div className="w-40">
                         <input
                           type="number"
-                          min="1"
+                          min="0.0001"
+                          step="0.0001"
                           value={input.quantity}
-                          onChange={(e) => updateInput(index, 'quantity', parseInt(e.target.value) || 0)}
-                          placeholder="Qty"
+                          onChange={(e) => updateInput(index, 'quantity', parseFloat(e.target.value) || 0)}
+                          placeholder="MSI"
                           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                             errors[`input_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
                           }`}
                         />
+                        {input.quantity > 0 && input.productId > 0 && (
+                          <p className="mt-1 text-xs text-gray-500">
+                            {calculateFootage(input.quantity, products.find(p => p.id === input.productId)?.width)?.toFixed(2)} feet
+                          </p>
+                        )}
                         {errors[`input_${index}_quantity`] && (
                           <p className="mt-1 text-xs text-red-600">{errors[`input_${index}_quantity`]}</p>
                         )}
@@ -354,7 +373,7 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                             <option value={0}>Select a product...</option>
                             {availableProducts.map((product) => (
                               <option key={product.id} value={product.id}>
-                                {product.name} ({product.lot}) - Current: {product.quantity}
+                                {product.name} ({product.lot}) - Current: {product.quantity.toFixed(4)} MSI{formatFootage(product.quantity, product.width)}
                               </option>
                             ))}
                           </select>
@@ -364,17 +383,23 @@ export default function OrderModal({ onClose }: OrderModalProps) {
                         </div>
 
                         {/* Quantity Input */}
-                        <div className="w-32">
+                        <div className="w-40">
                           <input
                             type="number"
-                            min="1"
+                            min="0.0001"
+                            step="0.0001"
                             value={output.quantity}
-                            onChange={(e) => updateOutput(index, 'quantity', parseInt(e.target.value) || 0)}
-                            placeholder="Qty"
+                            onChange={(e) => updateOutput(index, 'quantity', parseFloat(e.target.value) || 0)}
+                            placeholder="MSI"
                             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                               errors[`output_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
+                          {output.quantity > 0 && output.productId > 0 && (
+                            <p className="mt-1 text-xs text-gray-500">
+                              {calculateFootage(output.quantity, products.find(p => p.id === output.productId)?.width)?.toFixed(2)} feet
+                            </p>
+                          )}
                           {errors[`output_${index}_quantity`] && (
                             <p className="mt-1 text-xs text-red-600">{errors[`output_${index}_quantity`]}</p>
                           )}

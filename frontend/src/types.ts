@@ -15,7 +15,7 @@ export interface AuthResponse {
 
 // Product types
 export type ProductType = 'raw' | 'wip' | 'finished';
-export type ProductUnit = 'MSI' | 'feet' | 'lbs' | 'gallons' | 'units';
+export type ProductUnit = 'MSI'; // MSI only for precision in manufacturing
 
 export interface BOMItem {
   productId: number;

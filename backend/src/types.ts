@@ -15,8 +15,8 @@ export interface User {
 // Product types in the manufacturing process
 export type ProductType = 'raw' | 'wip' | 'finished';
 
-// Units of measurement
-export type ProductUnit = 'MSI' | 'feet' | 'lbs' | 'gallons' | 'units';
+// Units of measurement (MSI only for precision in manufacturing)
+export type ProductUnit = 'MSI';
 
 // Bill of Materials item
 export interface BOMItem {
