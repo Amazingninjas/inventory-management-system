@@ -12,7 +12,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
     name: '',
     lot: '',
     productType: 'raw' as 'raw' | 'wip' | 'finished',
-    unit: 'units' as 'MSI' | 'feet' | 'lbs' | 'gallons' | 'units',
+    unit: 'MSI' as 'MSI', // MSI only for precision manufacturing
     quantity: 0,
     costPerUnit: 0,
     location: '',
@@ -176,20 +176,15 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             {/* Unit */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Unit <span className="text-red-500">*</span>
+                Unit
               </label>
-              <select
-                name="unit"
-                value={formData.unit}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="MSI">MSI</option>
-                <option value="feet">Feet</option>
-                <option value="lbs">Pounds</option>
-                <option value="gallons">Gallons</option>
-                <option value="units">Units</option>
-              </select>
+              <input
+                type="text"
+                value="MSI"
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+              />
+              <p className="mt-1 text-xs text-gray-500">All quantities are measured in MSI (thousand square inches)</p>
             </div>
           </div>
 
@@ -198,7 +193,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             {/* Quantity */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quantity <span className="text-red-500">*</span>
+                Quantity (MSI) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -206,11 +201,11 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 value={formData.quantity}
                 onChange={handleChange}
                 min="0"
-                step="0.01"
+                step="0.0001"
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.quantity ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="0"
+                placeholder="0.0000"
               />
               {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>}
             </div>
@@ -218,7 +213,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             {/* Cost Per Unit */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cost Per Unit <span className="text-red-500">*</span>
+                Cost Per MSI <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
