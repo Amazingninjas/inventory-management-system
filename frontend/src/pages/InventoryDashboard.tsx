@@ -5,8 +5,6 @@ import { Product, Order } from '../types';
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,

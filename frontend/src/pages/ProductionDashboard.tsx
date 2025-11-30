@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { productAPI, orderAPI } from '../api';
-import { Product, Order } from '../types';
+import { orderAPI } from '../api';
+import { Order } from '../types';
 import {
   BarChart,
   Bar,
   LineChart,
   Line,
   ComposedChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -21,7 +20,6 @@ import {
 } from 'recharts';
 
 export default function ProductionDashboard() {
-  const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -41,15 +39,9 @@ export default function ProductionDashboard() {
   const fetchProductionData = async () => {
     try {
       setLoading(true);
-      const [productsRes, ordersRes] = await Promise.all([
-        productAPI.getAll(),
-        orderAPI.getAll(),
-      ]);
-
-      const productsData = productsRes.data;
+      const ordersRes = await orderAPI.getAll();
       const ordersData = ordersRes.data;
 
-      setProducts(productsData);
       setOrders(ordersData);
 
       // Calculate production statistics
@@ -463,7 +455,7 @@ export default function ProductionDashboard() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+                label={(entry: any) => `${entry.name}: ${entry.percentage.toFixed(1)}%`}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
