@@ -1,140 +1,91 @@
 # PSM Manufacturing ERP System - Scope of Work
 
-**Project:** Full ERP Implementation for Pressure Sensitive Material Manufacturing
-**Current Status:** Phase 1 Complete - Foundation & Analytics Dashboard
+**Project:** Initial Visibility ERP Replacement for PSM Manufacturing
+**Current Status:** Foundation Complete - Manufacturing Tracking & Analytics
 **Document Date:** November 30, 2025
 
 ---
 
 ## Executive Summary
 
-This document outlines the transformation of the current inventory management system into a comprehensive ERP platform capable of replacing Visibility ERP for PSM manufacturing operations. The system currently provides foundational manufacturing tracking, cost accounting, and executive analytics. The roadmap below defines the path to a complete enterprise resource planning solution.
+This document outlines the path to replace Visibility ERP with a modern cloud-based system for PSM manufacturing operations. The current system provides foundational manufacturing tracking, cost accounting, and executive analytics. The roadmap defines the critical features needed for initial deployment.
 
 ---
 
 ## Current System Capabilities
 
-### Manufacturing & Inventory
-- **Multi-stage production tracking** across 4 manufacturing stages (Coating → Adhesive → Liner → Cutting)
-- **Bill of Materials (BOM) management** with multi-level support
-- **Three order types:** Purchase Orders (receiving), Production Orders (manufacturing), Fulfillment Orders (shipping)
-- **Automatic cost calculation** with material and labor cost rollup through production stages
-- **MSI-based measurement system** for PSM products with width-aware calculations
-- **Product type classification:** Raw materials, Work-in-Progress (WIP), Finished Goods
+**Manufacturing Operations:**
+- Multi-stage production tracking (Coating → Adhesive → Liner → Cutting)
+- Bill of Materials (BOM) management with multi-level support
+- Three order types: Purchase Orders, Production Orders, Fulfillment Orders
+- Automatic cost calculation with material and labor rollup through production stages
+- MSI-based measurement system with width-aware calculations
+- Product classification: Raw materials, Work-in-Progress (WIP), Finished Goods
+- R&D cost tracking with 2x labor multiplier
 
-### Financial & Analytics
-- **Real-time cost accounting** with automatic cost-per-unit updates
-- **R&D cost tracking** with 2x labor multiplier for development orders
-- **Three comprehensive dashboards:**
-  - Executive Dashboard: Production costs, inventory valuation, order trends, cost analysis
-  - Inventory Dashboard: Stock levels, product movement, high-value items, low-stock alerts
-  - Production Dashboard: Production vs R&D metrics, efficiency tracking, cost breakdown
+**Analytics & Reporting:**
+- Executive Dashboard: Production costs, inventory valuation, order trends
+- Inventory Dashboard: Stock levels, product movement, high-value items, alerts
+- Production Dashboard: Production vs R&D metrics, efficiency tracking, cost breakdown
+- Real-time cost accounting with automatic cost-per-unit updates
 
-### User Management
-- **Role-based access control:** Operator, Manager, Admin
-- **Session-based authentication** with automatic security handling
-- **Permission-based UI** (e.g., only Manager/Admin can delete products)
-
-### Technical Foundation
-- **Modern tech stack:** TypeScript, React 18, Express, Recharts visualization
-- **Cloud deployment ready:** Currently deployed on Vercel with hot-reload development
-- **API-first architecture:** RESTful backend with protected endpoints
+**System Features:**
+- Role-based access control (Operator, Manager, Admin)
+- Session-based authentication with permission controls
+- Modern tech stack: TypeScript, React 18, Express, Recharts
+- Cloud-deployed on Vercel with API-first architecture
 
 ---
 
-## Full ERP Implementation Roadmap
+## Roadmap to Initial Visibility Replacement
 
-### Phase 1: Production Planning & Scheduling ✓ (COMPLETE)
-**Current:** Order creation and completion tracking
-**Add:** Work order scheduling, capacity planning, machine assignment, production calendars, bottleneck analysis
+### Phase 1: Multi-Location Inventory (CRITICAL)
+**Add:** Warehouse/location management, bin locations, inter-location transfers, location-specific stock levels, transfer orders and tracking
 
-### Phase 2: Advanced Inventory Management
-**Current:** Basic stock tracking with low-stock alerts
-**Add:** Multi-location warehousing, lot/serial tracking, automated reorder points, cycle counting, ABC analysis, bin locations, inter-location transfers
+### Phase 2: Enhanced Production Scheduling
+**Add:** Work order scheduling calendar, machine assignment, capacity planning, production queue management, bottleneck identification
 
-### Phase 3: Quality Control & Compliance
-**Add:** In-process quality checkpoints, test result recording, non-conformance tracking, Certificate of Analysis (COA) generation, ISO compliance workflows, scrap/rework tracking
+### Phase 3: Customer & Sales Management
+**Add:** Customer database, sales order entry, pricing rules, order fulfillment workflow, shipping integration (UPS/FedEx), customer order portal
 
-### Phase 4: Sales & Customer Management (CRM)
-**Add:** Customer database, quote generation, sales order management, pricing rules, customer-specific formulations, order tracking portal, shipping integration
+### Phase 4: Vendor & Purchasing
+**Add:** Vendor database, purchase requisitions, automated reorder points, receiving inspection, vendor performance tracking
 
-### Phase 5: Purchasing & Vendor Management
-**Current:** Basic purchase order creation
-**Add:** Vendor database, RFQ management, purchase requisitions, receiving inspection, vendor performance tracking, automatic PO generation from reorder points
+### Phase 5: Quality Control
+**Add:** In-process quality checkpoints, Certificate of Analysis (COA) generation, non-conformance tracking, scrap/rework recording
 
-### Phase 6: Financial Integration
-**Current:** Production cost tracking
-**Add:** General ledger integration, accounts payable/receivable, job costing, standard vs actual cost variance, P&L by product line, inventory valuation reports (FIFO/LIFO/Average)
-
-### Phase 7: Advanced Analytics & Reporting
-**Current:** Three real-time dashboards with charts
-**Add:** Custom report builder, scheduled reports, KPI tracking, predictive analytics, machine learning for demand forecasting, mobile dashboard access
-
-### Phase 8: Integration & Automation
-**Add:** EDI for customer/vendor integration, email/SMS notifications, barcode/RFID scanning, label printing, shipping carrier integration (UPS/FedEx), automated data backups
-
-### Phase 9: Advanced Manufacturing Features
-**Add:** Formula management for PSM coatings, batch tracking with genealogy, shelf-life management, work-in-process aging reports, yield analysis, setup time tracking
-
-### Phase 10: Infrastructure & Scalability
-**Current:** JSON file database
-**Add:** PostgreSQL migration, multi-tenant architecture, API rate limiting, audit logging, disaster recovery, performance optimization, 99.9% uptime SLA
-
----
-
-## Implementation Priority Tiers
-
-### Tier 1: Critical Path (Visibility Replacement Core)
-- Multi-location inventory (Phase 2)
-- Work order scheduling (Phase 1)
-- Customer sales orders (Phase 4)
-- Vendor purchase orders (Phase 5)
-- Financial integration (Phase 6)
-- Quality checkpoints (Phase 3)
-
-### Tier 2: Competitive Advantage
-- Real-time production tracking with barcode scanning (Phase 8)
-- Customer portal for order status (Phase 4)
-- Automated reorder points (Phase 2)
-- Certificate of Analysis generation (Phase 3)
-- Predictive demand forecasting (Phase 7)
-
-### Tier 3: Advanced Operations
-- Formula/recipe management (Phase 9)
-- EDI integration (Phase 8)
-- Custom report builder (Phase 7)
-- Yield and efficiency analytics (Phase 9)
-- Multi-tenant support (Phase 10)
+### Phase 6: Core Infrastructure
+**Add:** PostgreSQL database migration, automated backups, barcode scanning, label printing, audit logging, enhanced security
 
 ---
 
 ## Success Metrics
 
-**Operational Efficiency:**
+**Operational Impact:**
 - 50% reduction in order processing time
-- 30% reduction in inventory carrying costs through optimized reorder points
-- 25% improvement in on-time delivery through better scheduling
+- 30% reduction in inventory carrying costs
+- 25% improvement in on-time delivery
 
-**Financial Impact:**
-- Real-time cost visibility (currently achieved)
-- 20% reduction in accounting close time
-- Accurate job costing for all products
+**Financial Visibility:**
+- Real-time cost tracking across all production stages (✓ achieved)
+- Accurate job costing for customer quotes
+- 20% reduction in month-end close time
 
 **User Adoption:**
-- Single system replacing multiple spreadsheets and Visibility ERP
-- Mobile-friendly dashboards for shop floor and executive access
-- Role-based training reducing onboarding time by 40%
+- Single system replacing Visibility ERP and spreadsheets
+- Modern dashboards accessible from shop floor and executive offices
+- Reduced training time through intuitive UI
 
 ---
 
-## Business Value Summary
+## Business Value
 
-The current system demonstrates the technical foundation and modern user experience necessary for a full ERP replacement. The three-dashboard analytics suite showcases real-time data visualization capabilities that exceed typical ERP offerings. With the roadmap above, the system will provide:
+The current system demonstrates production-ready manufacturing tracking with cost accounting and analytics that exceed Visibility's capabilities. The six-phase roadmap focuses on essential features for initial deployment:
 
-1. **Complete manufacturing visibility** from raw material receipt through finished goods shipment
-2. **Integrated financial tracking** eliminating manual cost accounting
-3. **Customer and vendor portals** reducing administrative overhead
-4. **Scalable cloud architecture** supporting business growth without infrastructure investment
-5. **Modern user experience** driving higher adoption rates than legacy ERP systems
+1. **Multi-location support** enables accurate tracking across warehouse zones
+2. **Production scheduling** optimizes machine utilization and delivery commitments
+3. **Customer/vendor management** streamlines order processing and purchasing
+4. **Quality controls** ensure compliance and reduce defects
+5. **Infrastructure upgrades** provide enterprise-grade reliability and scalability
 
-The phased approach allows for incremental value delivery while maintaining operational continuity. Each phase builds upon proven foundations established in the current system.
+This focused approach delivers a working Visibility replacement while establishing the foundation for future enhancements like EDI integration, advanced analytics, and formula management.
