@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import InventoryDashboard from './pages/InventoryDashboard';
+import ProductionDashboard from './pages/ProductionDashboard';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import History from './pages/History';
@@ -80,6 +81,7 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="inventory" element={<InventoryDashboard />} />
+            <Route path="production" element={<ProductionDashboard />} />
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
             <Route path="rd" element={<RD />} />

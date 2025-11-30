@@ -47,6 +47,12 @@ export default function Layout() {
                   Inventory
                 </Link>
                 <Link
+                  to="/production"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Production
+                </Link>
+                <Link
                   to="/products"
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
