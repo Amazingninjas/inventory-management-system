@@ -163,8 +163,6 @@ export default function Dashboard() {
     return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
