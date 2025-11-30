@@ -260,3 +260,4 @@ When the order completes:
 This cost rolls up through subsequent stages, building the final product cost.
 - to memorize
 - to memorize
+- to memorize

@@ -1,0 +1,734 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "Demo",
+      "password": "Demo",
+      "role": "admin",
+      "name": "Demo User",
+      "createdAt": "2025-11-30T12:17:44.278Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "PET Film",
+      "lot": "RAW-FILM-001",
+      "productType": "raw",
+      "unit": "MSI",
+      "quantity": 4600,
+      "costPerUnit": 0.5,
+      "location": "Raw Materials - Bay 1",
+      "description": "Polyester film base material",
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 2,
+      "name": "Top-coat 581",
+      "lot": "RAW-TC581-001",
+      "productType": "raw",
+      "unit": "MSI",
+      "quantity": 2800,
+      "costPerUnit": 0.8,
+      "location": "Raw Materials - Bay 2",
+      "description": "Custom top-coat material for 581 series",
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 3,
+      "name": "Top-coat 582",
+      "lot": "RAW-TC582-001",
+      "productType": "raw",
+      "unit": "MSI",
+      "quantity": 2800,
+      "costPerUnit": 0.9,
+      "location": "Raw Materials - Bay 2",
+      "description": "Custom top-coat material for 582 series",
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 4,
+      "name": "Acrylic Adhesive 581",
+      "lot": "RAW-ADH581-001",
+      "productType": "raw",
+      "unit": "MSI",
+      "quantity": 2350,
+      "costPerUnit": 1.2,
+      "location": "Raw Materials - Bay 3",
+      "description": "Acrylic adhesive for 581 series",
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 5,
+      "name": "Acrylic Adhesive 582",
+      "lot": "RAW-ADH582-001",
+      "productType": "raw",
+      "unit": "MSI",
+      "quantity": 2350,
+      "costPerUnit": 1.5,
+      "location": "Raw Materials - Bay 3",
+      "description": "Acrylic adhesive for 582 series",
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 6,
+      "name": "Silicone Liner",
+      "lot": "RAW-LINER-001",
+      "productType": "raw",
+      "unit": "MSI",
+      "quantity": 3760,
+      "costPerUnit": 0.3,
+      "location": "Raw Materials - Bay 4",
+      "description": "Silicone release liner",
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 7,
+      "name": "Coated Film 581-215",
+      "lot": "WIP-CF581-215",
+      "productType": "wip",
+      "unit": "MSI",
+      "width": 21.5,
+      "quantity": 20,
+      "costPerUnit": 1.55,
+      "location": "WIP - Coating Line",
+      "description": "PET Film with 581 top-coat applied, 21.5\" wide",
+      "laborCostPerUnit": 0.25,
+      "bom": [
+        {
+          "productId": 1,
+          "productName": "PET Film",
+          "productLot": "RAW-FILM-001",
+          "quantity": 1
+        },
+        {
+          "productId": 2,
+          "productName": "Top-coat 581",
+          "productLot": "RAW-TC581-001",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 8,
+      "name": "Coated Film 582-22",
+      "lot": "WIP-CF582-22",
+      "productType": "wip",
+      "unit": "MSI",
+      "width": 22,
+      "quantity": 25,
+      "costPerUnit": 1.65,
+      "location": "WIP - Coating Line",
+      "description": "PET Film with 582 top-coat applied, 22\" wide",
+      "laborCostPerUnit": 0.25,
+      "bom": [
+        {
+          "productId": 1,
+          "productName": "PET Film",
+          "productLot": "RAW-FILM-001",
+          "quantity": 1
+        },
+        {
+          "productId": 3,
+          "productName": "Top-coat 582",
+          "productLot": "RAW-TC582-001",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 9,
+      "name": "Coated Film w/ Adhesive 581-215",
+      "lot": "WIP-CFA581-215",
+      "productType": "wip",
+      "unit": "MSI",
+      "width": 21.5,
+      "quantity": 30,
+      "costPerUnit": 3.05,
+      "location": "WIP - Adhesive Line",
+      "description": "Coated Film 581 with adhesive applied, 21.5\" wide",
+      "laborCostPerUnit": 0.3,
+      "bom": [
+        {
+          "productId": 7,
+          "productName": "Coated Film 581-215",
+          "productLot": "WIP-CF581-215",
+          "quantity": 1
+        },
+        {
+          "productId": 4,
+          "productName": "Acrylic Adhesive 581",
+          "productLot": "RAW-ADH581-001",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 10,
+      "name": "Coated Film w/ Adhesive 582-22",
+      "lot": "WIP-CFA582-22",
+      "productType": "wip",
+      "unit": "MSI",
+      "width": 22,
+      "quantity": 30,
+      "costPerUnit": 3.45,
+      "location": "WIP - Adhesive Line",
+      "description": "Coated Film 582 with adhesive applied, 22\" wide",
+      "laborCostPerUnit": 0.3,
+      "bom": [
+        {
+          "productId": 8,
+          "productName": "Coated Film 582-22",
+          "productLot": "WIP-CF582-22",
+          "quantity": 1
+        },
+        {
+          "productId": 5,
+          "productName": "Acrylic Adhesive 582",
+          "productLot": "RAW-ADH582-001",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 11,
+      "name": "Master Roll 581-215",
+      "lot": "WIP-MR581-215",
+      "productType": "wip",
+      "unit": "MSI",
+      "width": 21.5,
+      "quantity": 5,
+      "costPerUnit": 3.55,
+      "location": "WIP - Liner Line",
+      "description": "Complete PSM with liner, 21.5\" wide, ready for cutting",
+      "laborCostPerUnit": 0.2,
+      "bom": [
+        {
+          "productId": 9,
+          "productName": "Coated Film w/ Adhesive 581-215",
+          "productLot": "WIP-CFA581-215",
+          "quantity": 1
+        },
+        {
+          "productId": 6,
+          "productName": "Silicone Liner",
+          "productLot": "RAW-LINER-001",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 12,
+      "name": "Master Roll 582-22",
+      "lot": "WIP-MR582-22",
+      "productType": "wip",
+      "unit": "MSI",
+      "width": 22,
+      "quantity": 10,
+      "costPerUnit": 3.95,
+      "location": "WIP - Liner Line",
+      "description": "Complete PSM with liner, 22\" wide, ready for cutting",
+      "laborCostPerUnit": 0.2,
+      "bom": [
+        {
+          "productId": 10,
+          "productName": "Coated Film w/ Adhesive 582-22",
+          "productLot": "WIP-CFA582-22",
+          "quantity": 1
+        },
+        {
+          "productId": 6,
+          "productName": "Silicone Liner",
+          "productLot": "RAW-LINER-001",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 13,
+      "name": "581-215",
+      "lot": "FIN-581-215",
+      "productType": "finished",
+      "unit": "MSI",
+      "width": 21.5,
+      "quantity": 100,
+      "costPerUnit": 3.7,
+      "location": "Finished Goods",
+      "description": "Finished PSM product 581-215, cut to customer specifications",
+      "laborCostPerUnit": 0.15,
+      "bom": [
+        {
+          "productId": 11,
+          "productName": "Master Roll 581-215",
+          "productLot": "WIP-MR581-215",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    },
+    {
+      "id": 14,
+      "name": "582-22",
+      "lot": "FIN-582-22",
+      "productType": "finished",
+      "unit": "MSI",
+      "width": 22,
+      "quantity": 100,
+      "costPerUnit": 4.1,
+      "location": "Finished Goods",
+      "description": "Finished PSM product 582-22, cut to customer specifications",
+      "laborCostPerUnit": 0.15,
+      "bom": [
+        {
+          "productId": 12,
+          "productName": "Master Roll 582-22",
+          "productLot": "WIP-MR582-22",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2025-11-30T12:17:44.279Z",
+      "updatedAt": "2025-11-30T12:17:44.279Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "orderNumber": "ORD-001",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 1,
+          "productName": "PET Film",
+          "productLot": "RAW-FILM-001",
+          "quantity": 200,
+          "location": "Raw Materials - Bay 1",
+          "costPerUnit": 0.5
+        },
+        {
+          "productId": 2,
+          "productName": "Top-coat 581",
+          "productLot": "RAW-TC581-001",
+          "quantity": 200,
+          "location": "Raw Materials - Bay 2",
+          "costPerUnit": 0.8
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 7,
+          "productName": "Coated Film 581-215",
+          "productLot": "WIP-CF581-215",
+          "quantity": 200,
+          "location": "WIP - Coating Line",
+          "costPerUnit": 1.55
+        }
+      ],
+      "costs": {
+        "materialCost": 260,
+        "laborCost": 50,
+        "totalCost": 310,
+        "costPerUnit": 1.55
+      },
+      "notes": "Initial production run - Stage 1 coating",
+      "createdAt": "2025-11-20T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-20T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 2,
+      "orderNumber": "ORD-002",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 7,
+          "productName": "Coated Film 581-215",
+          "productLot": "WIP-CF581-215",
+          "quantity": 150,
+          "location": "WIP - Coating Line",
+          "costPerUnit": 1.55
+        },
+        {
+          "productId": 4,
+          "productName": "Acrylic Adhesive 581",
+          "productLot": "RAW-ADH581-001",
+          "quantity": 150,
+          "location": "Raw Materials - Bay 3",
+          "costPerUnit": 1.2
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 9,
+          "productName": "Coated Film w/ Adhesive 581-215",
+          "productLot": "WIP-CFA581-215",
+          "quantity": 150,
+          "location": "WIP - Adhesive Line",
+          "costPerUnit": 3.05
+        }
+      ],
+      "costs": {
+        "materialCost": 412.5,
+        "laborCost": 45,
+        "totalCost": 457.5,
+        "costPerUnit": 3.05
+      },
+      "notes": "Initial production run - Stage 2 adhesive",
+      "createdAt": "2025-11-21T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-21T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 3,
+      "orderNumber": "ORD-003",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 9,
+          "productName": "Coated Film w/ Adhesive 581-215",
+          "productLot": "WIP-CFA581-215",
+          "quantity": 120,
+          "location": "WIP - Adhesive Line",
+          "costPerUnit": 3.05
+        },
+        {
+          "productId": 6,
+          "productName": "Silicone Liner",
+          "productLot": "RAW-LINER-001",
+          "quantity": 120,
+          "location": "Raw Materials - Bay 4",
+          "costPerUnit": 0.3
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 11,
+          "productName": "Master Roll 581-215",
+          "productLot": "WIP-MR581-215",
+          "quantity": 120,
+          "location": "WIP - Liner Line",
+          "costPerUnit": 3.55
+        }
+      ],
+      "costs": {
+        "materialCost": 402,
+        "laborCost": 24,
+        "totalCost": 426,
+        "costPerUnit": 3.55
+      },
+      "notes": "Initial production run - Stage 3 liner",
+      "createdAt": "2025-11-22T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-22T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 4,
+      "orderNumber": "ORD-004",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 11,
+          "productName": "Master Roll 581-215",
+          "productLot": "WIP-MR581-215",
+          "quantity": 100,
+          "location": "WIP - Liner Line",
+          "costPerUnit": 3.55
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 13,
+          "productName": "581-215",
+          "productLot": "FIN-581-215",
+          "quantity": 100,
+          "location": "Finished Goods",
+          "costPerUnit": 3.7
+        }
+      ],
+      "costs": {
+        "materialCost": 355,
+        "laborCost": 15,
+        "totalCost": 370,
+        "costPerUnit": 3.7
+      },
+      "notes": "Initial production run - Stage 4 cutting",
+      "createdAt": "2025-11-23T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-23T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 5,
+      "orderNumber": "ORD-005",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 1,
+          "productName": "PET Film",
+          "productLot": "RAW-FILM-001",
+          "quantity": 200,
+          "location": "Raw Materials - Bay 1",
+          "costPerUnit": 0.5
+        },
+        {
+          "productId": 3,
+          "productName": "Top-coat 582",
+          "productLot": "RAW-TC582-001",
+          "quantity": 200,
+          "location": "Raw Materials - Bay 2",
+          "costPerUnit": 0.9
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 8,
+          "productName": "Coated Film 582-22",
+          "productLot": "WIP-CF582-22",
+          "quantity": 200,
+          "location": "WIP - Coating Line",
+          "costPerUnit": 1.65
+        }
+      ],
+      "costs": {
+        "materialCost": 280,
+        "laborCost": 50,
+        "totalCost": 330,
+        "costPerUnit": 1.65
+      },
+      "notes": "Initial production run - Stage 1 coating",
+      "createdAt": "2025-11-20T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-20T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 6,
+      "orderNumber": "ORD-006",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 8,
+          "productName": "Coated Film 582-22",
+          "productLot": "WIP-CF582-22",
+          "quantity": 150,
+          "location": "WIP - Coating Line",
+          "costPerUnit": 1.65
+        },
+        {
+          "productId": 5,
+          "productName": "Acrylic Adhesive 582",
+          "productLot": "RAW-ADH582-001",
+          "quantity": 150,
+          "location": "Raw Materials - Bay 3",
+          "costPerUnit": 1.5
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 10,
+          "productName": "Coated Film w/ Adhesive 582-22",
+          "productLot": "WIP-CFA582-22",
+          "quantity": 150,
+          "location": "WIP - Adhesive Line",
+          "costPerUnit": 3.45
+        }
+      ],
+      "costs": {
+        "materialCost": 472.5,
+        "laborCost": 45,
+        "totalCost": 517.5,
+        "costPerUnit": 3.45
+      },
+      "notes": "Initial production run - Stage 2 adhesive",
+      "createdAt": "2025-11-21T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-21T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 7,
+      "orderNumber": "ORD-007",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 10,
+          "productName": "Coated Film w/ Adhesive 582-22",
+          "productLot": "WIP-CFA582-22",
+          "quantity": 120,
+          "location": "WIP - Adhesive Line",
+          "costPerUnit": 3.45
+        },
+        {
+          "productId": 6,
+          "productName": "Silicone Liner",
+          "productLot": "RAW-LINER-001",
+          "quantity": 120,
+          "location": "Raw Materials - Bay 4",
+          "costPerUnit": 0.3
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 12,
+          "productName": "Master Roll 582-22",
+          "productLot": "WIP-MR582-22",
+          "quantity": 120,
+          "location": "WIP - Liner Line",
+          "costPerUnit": 3.95
+        }
+      ],
+      "costs": {
+        "materialCost": 450,
+        "laborCost": 24,
+        "totalCost": 474,
+        "costPerUnit": 3.95
+      },
+      "notes": "Initial production run - Stage 3 liner",
+      "createdAt": "2025-11-22T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-22T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 8,
+      "orderNumber": "ORD-008",
+      "orderType": "production",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 12,
+          "productName": "Master Roll 582-22",
+          "productLot": "WIP-MR582-22",
+          "quantity": 100,
+          "location": "WIP - Liner Line",
+          "costPerUnit": 3.95
+        }
+      ],
+      "outputs": [
+        {
+          "productId": 14,
+          "productName": "582-22",
+          "productLot": "FIN-582-22",
+          "quantity": 100,
+          "location": "Finished Goods",
+          "costPerUnit": 4.1
+        }
+      ],
+      "costs": {
+        "materialCost": 395,
+        "laborCost": 15,
+        "totalCost": 410,
+        "costPerUnit": 4.1
+      },
+      "notes": "Initial production run - Stage 4 cutting",
+      "createdAt": "2025-11-23T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-23T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 9,
+      "orderNumber": "ORD-009",
+      "orderType": "r&d",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 7,
+          "productName": "Coated Film 581-215",
+          "productLot": "WIP-CF581-215",
+          "quantity": 30,
+          "location": "WIP - Coating Line",
+          "costPerUnit": 1.55
+        },
+        {
+          "productId": 11,
+          "productName": "Master Roll 581-215",
+          "productLot": "WIP-MR581-215",
+          "quantity": 15,
+          "location": "WIP - Liner Line",
+          "costPerUnit": 3.55
+        }
+      ],
+      "outputs": [],
+      "costs": {
+        "materialCost": 99.75,
+        "laborCost": 21,
+        "totalCost": 120.75,
+        "costPerUnit": 0
+      },
+      "notes": "R&D testing for adhesion strength and durability - 581 series",
+      "createdAt": "2025-11-25T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-25T12:17:44.279Z",
+      "completedBy": 1
+    },
+    {
+      "id": 10,
+      "orderNumber": "ORD-010",
+      "orderType": "r&d",
+      "status": "completed",
+      "inputs": [
+        {
+          "productId": 8,
+          "productName": "Coated Film 582-22",
+          "productLot": "WIP-CF582-22",
+          "quantity": 25,
+          "location": "WIP - Coating Line",
+          "costPerUnit": 1.65
+        },
+        {
+          "productId": 12,
+          "productName": "Master Roll 582-22",
+          "productLot": "WIP-MR582-22",
+          "quantity": 10,
+          "location": "WIP - Liner Line",
+          "costPerUnit": 3.95
+        }
+      ],
+      "outputs": [],
+      "costs": {
+        "materialCost": 80.75,
+        "laborCost": 16.5,
+        "totalCost": 97.25,
+        "costPerUnit": 0
+      },
+      "notes": "R&D testing for temperature resistance - 582 series",
+      "createdAt": "2025-11-27T12:17:44.279Z",
+      "createdBy": 1,
+      "completedAt": "2025-11-27T12:17:44.279Z",
+      "completedBy": 1
+    }
+  ],
+  "nextUserId": 2,
+  "nextProductId": 15,
+  "nextOrderId": 11,
+  "nextOrderNumber": 11
+}
