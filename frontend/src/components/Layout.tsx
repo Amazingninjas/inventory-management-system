@@ -41,6 +41,12 @@ export default function Layout() {
                   Dashboard
                 </Link>
                 <Link
+                  to="/inventory"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Inventory
+                </Link>
+                <Link
                   to="/products"
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >

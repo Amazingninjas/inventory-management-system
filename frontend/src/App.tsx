@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
+import InventoryDashboard from './pages/InventoryDashboard';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import History from './pages/History';
@@ -78,6 +79,7 @@ function App() {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="inventory" element={<InventoryDashboard />} />
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
             <Route path="rd" element={<RD />} />
