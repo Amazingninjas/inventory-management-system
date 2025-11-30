@@ -1,5 +1,7 @@
 # Inventory Management System - Project Context
 
+**IMPORTANT: This project is tested on a cloud server. Always commit and push changes to git after making modifications.**
+
 ## Recent Major Updates (November 2025)
 
 The system has been upgraded from a simple inventory tracker to a **full ERP manufacturing system** with multi-stage production, cost tracking, and financial analytics.
@@ -256,4 +258,5 @@ When the order completes:
 - Coated Film 581-215 costPerUnit updated to $1.55
 
 This cost rolls up through subsequent stages, building the final product cost.
+- to memorize
 - to memorize

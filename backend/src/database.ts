@@ -24,7 +24,7 @@ const initialData: Database = {
       lot: 'RAW-FILM-001',
       productType: 'raw',
       unit: 'MSI',
-      quantity: 5000,
+      quantity: 4600, // 5000 - 200 (ORD-001) - 200 (ORD-005)
       costPerUnit: 0.50,
       location: 'Raw Materials - Bay 1',
       description: 'Polyester film base material',
@@ -37,7 +37,7 @@ const initialData: Database = {
       lot: 'RAW-TC581-001',
       productType: 'raw',
       unit: 'MSI',
-      quantity: 3000,
+      quantity: 2800, // 3000 - 200 (ORD-001)
       costPerUnit: 0.80,
       location: 'Raw Materials - Bay 2',
       description: 'Custom top-coat material for 581 series',
@@ -50,7 +50,7 @@ const initialData: Database = {
       lot: 'RAW-TC582-001',
       productType: 'raw',
       unit: 'MSI',
-      quantity: 3000,
+      quantity: 2800, // 3000 - 200 (ORD-005)
       costPerUnit: 0.90,
       location: 'Raw Materials - Bay 2',
       description: 'Custom top-coat material for 582 series',
@@ -63,7 +63,7 @@ const initialData: Database = {
       lot: 'RAW-ADH581-001',
       productType: 'raw',
       unit: 'MSI',
-      quantity: 2500,
+      quantity: 2350, // 2500 - 150 (ORD-002)
       costPerUnit: 1.20,
       location: 'Raw Materials - Bay 3',
       description: 'Acrylic adhesive for 581 series',
@@ -76,7 +76,7 @@ const initialData: Database = {
       lot: 'RAW-ADH582-001',
       productType: 'raw',
       unit: 'MSI',
-      quantity: 2500,
+      quantity: 2350, // 2500 - 150 (ORD-006)
       costPerUnit: 1.50,
       location: 'Raw Materials - Bay 3',
       description: 'Acrylic adhesive for 582 series',
@@ -89,7 +89,7 @@ const initialData: Database = {
       lot: 'RAW-LINER-001',
       productType: 'raw',
       unit: 'MSI',
-      quantity: 4000,
+      quantity: 3760, // 4000 - 120 (ORD-003) - 120 (ORD-007)
       costPerUnit: 0.30,
       location: 'Raw Materials - Bay 4',
       description: 'Silicone release liner',
@@ -105,8 +105,8 @@ const initialData: Database = {
       productType: 'wip',
       unit: 'MSI',
       width: 21.5,
-      quantity: 0,
-      costPerUnit: 0, // Calculated from BOM
+      quantity: 20, // +200 (ORD-001) - 150 (ORD-002) - 30 (ORD-009)
+      costPerUnit: 1.55, // From ORD-001
       location: 'WIP - Coating Line',
       description: 'PET Film with 581 top-coat applied, 21.5" wide',
       laborCostPerUnit: 0.25,
@@ -124,8 +124,8 @@ const initialData: Database = {
       productType: 'wip',
       unit: 'MSI',
       width: 22,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 25, // +200 (ORD-005) - 150 (ORD-006) - 25 (ORD-010)
+      costPerUnit: 1.65, // From ORD-005
       location: 'WIP - Coating Line',
       description: 'PET Film with 582 top-coat applied, 22" wide',
       laborCostPerUnit: 0.25,
@@ -145,8 +145,8 @@ const initialData: Database = {
       productType: 'wip',
       unit: 'MSI',
       width: 21.5,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 30, // +150 (ORD-002) - 120 (ORD-003)
+      costPerUnit: 3.05, // From ORD-002
       location: 'WIP - Adhesive Line',
       description: 'Coated Film 581 with adhesive applied, 21.5" wide',
       laborCostPerUnit: 0.30,
@@ -164,8 +164,8 @@ const initialData: Database = {
       productType: 'wip',
       unit: 'MSI',
       width: 22,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 30, // +150 (ORD-006) - 120 (ORD-007)
+      costPerUnit: 3.45, // From ORD-006
       location: 'WIP - Adhesive Line',
       description: 'Coated Film 582 with adhesive applied, 22" wide',
       laborCostPerUnit: 0.30,
@@ -185,8 +185,8 @@ const initialData: Database = {
       productType: 'wip',
       unit: 'MSI',
       width: 21.5,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 5, // +120 (ORD-003) - 100 (ORD-004) - 15 (ORD-009)
+      costPerUnit: 3.55, // From ORD-003
       location: 'WIP - Liner Line',
       description: 'Complete PSM with liner, 21.5" wide, ready for cutting',
       laborCostPerUnit: 0.20,
@@ -204,8 +204,8 @@ const initialData: Database = {
       productType: 'wip',
       unit: 'MSI',
       width: 22,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 10, // +120 (ORD-007) - 100 (ORD-008) - 10 (ORD-010)
+      costPerUnit: 3.95, // From ORD-007
       location: 'WIP - Liner Line',
       description: 'Complete PSM with liner, 22" wide, ready for cutting',
       laborCostPerUnit: 0.20,
@@ -225,8 +225,8 @@ const initialData: Database = {
       productType: 'finished',
       unit: 'MSI',
       width: 21.5,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 100, // +100 (ORD-004)
+      costPerUnit: 3.70, // From ORD-004
       location: 'Finished Goods',
       description: 'Finished PSM product 581-215, cut to customer specifications',
       laborCostPerUnit: 0.15,
@@ -243,8 +243,8 @@ const initialData: Database = {
       productType: 'finished',
       unit: 'MSI',
       width: 22,
-      quantity: 0,
-      costPerUnit: 0,
+      quantity: 100, // +100 (ORD-008)
+      costPerUnit: 4.10, // From ORD-008
       location: 'Finished Goods',
       description: 'Finished PSM product 582-22, cut to customer specifications',
       laborCostPerUnit: 0.15,
@@ -255,11 +255,261 @@ const initialData: Database = {
       updatedAt: new Date().toISOString(),
     },
   ],
-  orders: [],
+  orders: [
+    // ===== 581-215 PRODUCTION CHAIN =====
+    // Stage 1: Coating - Make Coated Film 581-215
+    {
+      id: 1,
+      orderNumber: 'ORD-001',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 1, productName: 'PET Film', productLot: 'RAW-FILM-001', quantity: 200, location: 'Raw Materials - Bay 1', costPerUnit: 0.50 },
+        { productId: 2, productName: 'Top-coat 581', productLot: 'RAW-TC581-001', quantity: 200, location: 'Raw Materials - Bay 2', costPerUnit: 0.80 },
+      ],
+      outputs: [
+        { productId: 7, productName: 'Coated Film 581-215', productLot: 'WIP-CF581-215', quantity: 200, location: 'WIP - Coating Line', costPerUnit: 1.55 },
+      ],
+      costs: {
+        materialCost: 260, // (200 × 0.50) + (200 × 0.80)
+        laborCost: 50, // 200 × 0.25
+        totalCost: 310,
+        costPerUnit: 1.55,
+      },
+      notes: 'Initial production run - Stage 1 coating',
+      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // Stage 2: Adhesive Application
+    {
+      id: 2,
+      orderNumber: 'ORD-002',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 7, productName: 'Coated Film 581-215', productLot: 'WIP-CF581-215', quantity: 150, location: 'WIP - Coating Line', costPerUnit: 1.55 },
+        { productId: 4, productName: 'Acrylic Adhesive 581', productLot: 'RAW-ADH581-001', quantity: 150, location: 'Raw Materials - Bay 3', costPerUnit: 1.20 },
+      ],
+      outputs: [
+        { productId: 9, productName: 'Coated Film w/ Adhesive 581-215', productLot: 'WIP-CFA581-215', quantity: 150, location: 'WIP - Adhesive Line', costPerUnit: 3.05 },
+      ],
+      costs: {
+        materialCost: 412.50, // (150 × 1.55) + (150 × 1.20)
+        laborCost: 45, // 150 × 0.30
+        totalCost: 457.50,
+        costPerUnit: 3.05,
+      },
+      notes: 'Initial production run - Stage 2 adhesive',
+      createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // Stage 3: Liner Application
+    {
+      id: 3,
+      orderNumber: 'ORD-003',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 9, productName: 'Coated Film w/ Adhesive 581-215', productLot: 'WIP-CFA581-215', quantity: 120, location: 'WIP - Adhesive Line', costPerUnit: 3.05 },
+        { productId: 6, productName: 'Silicone Liner', productLot: 'RAW-LINER-001', quantity: 120, location: 'Raw Materials - Bay 4', costPerUnit: 0.30 },
+      ],
+      outputs: [
+        { productId: 11, productName: 'Master Roll 581-215', productLot: 'WIP-MR581-215', quantity: 120, location: 'WIP - Liner Line', costPerUnit: 3.55 },
+      ],
+      costs: {
+        materialCost: 402, // (120 × 3.05) + (120 × 0.30)
+        laborCost: 24, // 120 × 0.20
+        totalCost: 426,
+        costPerUnit: 3.55,
+      },
+      notes: 'Initial production run - Stage 3 liner',
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // Stage 4: Cutting to finished goods
+    {
+      id: 4,
+      orderNumber: 'ORD-004',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 11, productName: 'Master Roll 581-215', productLot: 'WIP-MR581-215', quantity: 100, location: 'WIP - Liner Line', costPerUnit: 3.55 },
+      ],
+      outputs: [
+        { productId: 13, productName: '581-215', productLot: 'FIN-581-215', quantity: 100, location: 'Finished Goods', costPerUnit: 3.70 },
+      ],
+      costs: {
+        materialCost: 355, // 100 × 3.55
+        laborCost: 15, // 100 × 0.15
+        totalCost: 370,
+        costPerUnit: 3.70,
+      },
+      notes: 'Initial production run - Stage 4 cutting',
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+
+    // ===== 582-22 PRODUCTION CHAIN =====
+    // Stage 1: Coating - Make Coated Film 582-22
+    {
+      id: 5,
+      orderNumber: 'ORD-005',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 1, productName: 'PET Film', productLot: 'RAW-FILM-001', quantity: 200, location: 'Raw Materials - Bay 1', costPerUnit: 0.50 },
+        { productId: 3, productName: 'Top-coat 582', productLot: 'RAW-TC582-001', quantity: 200, location: 'Raw Materials - Bay 2', costPerUnit: 0.90 },
+      ],
+      outputs: [
+        { productId: 8, productName: 'Coated Film 582-22', productLot: 'WIP-CF582-22', quantity: 200, location: 'WIP - Coating Line', costPerUnit: 1.65 },
+      ],
+      costs: {
+        materialCost: 280, // (200 × 0.50) + (200 × 0.90)
+        laborCost: 50, // 200 × 0.25
+        totalCost: 330,
+        costPerUnit: 1.65,
+      },
+      notes: 'Initial production run - Stage 1 coating',
+      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // Stage 2: Adhesive Application
+    {
+      id: 6,
+      orderNumber: 'ORD-006',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 8, productName: 'Coated Film 582-22', productLot: 'WIP-CF582-22', quantity: 150, location: 'WIP - Coating Line', costPerUnit: 1.65 },
+        { productId: 5, productName: 'Acrylic Adhesive 582', productLot: 'RAW-ADH582-001', quantity: 150, location: 'Raw Materials - Bay 3', costPerUnit: 1.50 },
+      ],
+      outputs: [
+        { productId: 10, productName: 'Coated Film w/ Adhesive 582-22', productLot: 'WIP-CFA582-22', quantity: 150, location: 'WIP - Adhesive Line', costPerUnit: 3.45 },
+      ],
+      costs: {
+        materialCost: 472.50, // (150 × 1.65) + (150 × 1.50)
+        laborCost: 45, // 150 × 0.30
+        totalCost: 517.50,
+        costPerUnit: 3.45,
+      },
+      notes: 'Initial production run - Stage 2 adhesive',
+      createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // Stage 3: Liner Application
+    {
+      id: 7,
+      orderNumber: 'ORD-007',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 10, productName: 'Coated Film w/ Adhesive 582-22', productLot: 'WIP-CFA582-22', quantity: 120, location: 'WIP - Adhesive Line', costPerUnit: 3.45 },
+        { productId: 6, productName: 'Silicone Liner', productLot: 'RAW-LINER-001', quantity: 120, location: 'Raw Materials - Bay 4', costPerUnit: 0.30 },
+      ],
+      outputs: [
+        { productId: 12, productName: 'Master Roll 582-22', productLot: 'WIP-MR582-22', quantity: 120, location: 'WIP - Liner Line', costPerUnit: 3.95 },
+      ],
+      costs: {
+        materialCost: 450, // (120 × 3.45) + (120 × 0.30)
+        laborCost: 24, // 120 × 0.20
+        totalCost: 474,
+        costPerUnit: 3.95,
+      },
+      notes: 'Initial production run - Stage 3 liner',
+      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // Stage 4: Cutting to finished goods
+    {
+      id: 8,
+      orderNumber: 'ORD-008',
+      orderType: 'production',
+      status: 'completed',
+      inputs: [
+        { productId: 12, productName: 'Master Roll 582-22', productLot: 'WIP-MR582-22', quantity: 100, location: 'WIP - Liner Line', costPerUnit: 3.95 },
+      ],
+      outputs: [
+        { productId: 14, productName: '582-22', productLot: 'FIN-582-22', quantity: 100, location: 'Finished Goods', costPerUnit: 4.10 },
+      ],
+      costs: {
+        materialCost: 395, // 100 × 3.95
+        laborCost: 15, // 100 × 0.15
+        totalCost: 410,
+        costPerUnit: 4.10,
+      },
+      notes: 'Initial production run - Stage 4 cutting',
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+
+    // ===== R&D ORDERS =====
+    // R&D testing with 581 materials
+    {
+      id: 9,
+      orderNumber: 'ORD-009',
+      orderType: 'r&d',
+      status: 'completed',
+      inputs: [
+        { productId: 7, productName: 'Coated Film 581-215', productLot: 'WIP-CF581-215', quantity: 30, location: 'WIP - Coating Line', costPerUnit: 1.55 },
+        { productId: 11, productName: 'Master Roll 581-215', productLot: 'WIP-MR581-215', quantity: 15, location: 'WIP - Liner Line', costPerUnit: 3.55 },
+      ],
+      outputs: [],
+      costs: {
+        materialCost: 99.75, // (30 × 1.55) + (15 × 3.55)
+        laborCost: 21, // (30 × 0.25 × 2) + (15 × 0.20 × 2) = 15 + 6 = 21
+        totalCost: 120.75,
+        costPerUnit: 0,
+      },
+      notes: 'R&D testing for adhesion strength and durability - 581 series',
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+    // R&D testing with 582 materials
+    {
+      id: 10,
+      orderNumber: 'ORD-010',
+      orderType: 'r&d',
+      status: 'completed',
+      inputs: [
+        { productId: 8, productName: 'Coated Film 582-22', productLot: 'WIP-CF582-22', quantity: 25, location: 'WIP - Coating Line', costPerUnit: 1.65 },
+        { productId: 12, productName: 'Master Roll 582-22', productLot: 'WIP-MR582-22', quantity: 10, location: 'WIP - Liner Line', costPerUnit: 3.95 },
+      ],
+      outputs: [],
+      costs: {
+        materialCost: 80.75, // (25 × 1.65) + (10 × 3.95)
+        laborCost: 16.50, // (25 × 0.25 × 2) + (10 × 0.20 × 2) = 12.5 + 4 = 16.5
+        totalCost: 97.25,
+        costPerUnit: 0,
+      },
+      notes: 'R&D testing for temperature resistance - 582 series',
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      createdBy: 1,
+      completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      completedBy: 1,
+    },
+  ],
   nextUserId: 2,
   nextProductId: 15,
-  nextOrderId: 1,
-  nextOrderNumber: 1,
+  nextOrderId: 11,
+  nextOrderNumber: 11,
 };
 
 // Ensure data directory exists
@@ -584,14 +834,24 @@ export function completeOrder(id: number, userId?: number): { order: Order; erro
       }
     }
 
-    // For R&D, calculate material costs from inputs
+    // For R&D, calculate costs: material same as production, labor 2x production
     if (order.orderType === 'r&d') {
       let materialCost = 0;
+      let laborCost = 0;
+
       for (const input of order.inputs) {
-        materialCost += (input.costPerUnit || 0) * input.quantity;
+        const product = db.products.find(p => p.id === input.productId);
+        if (product) {
+          // Material cost: Same as production (input cost)
+          materialCost += (input.costPerUnit || product.costPerUnit) * input.quantity;
+
+          // Labor cost: Double the production labor cost
+          if (product.laborCostPerUnit) {
+            laborCost += product.laborCostPerUnit * input.quantity * 2;
+          }
+        }
       }
 
-      const laborCost = (order.costs?.laborCost || 0);
       productionCosts = {
         materialCost,
         laborCost,
