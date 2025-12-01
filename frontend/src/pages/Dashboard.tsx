@@ -389,7 +389,7 @@ export default function Dashboard() {
         </Link>
 
         <Link
-          to="/orders?filter=r&d"
+          to="/orders?filter=r%26d"
           className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center justify-between">
