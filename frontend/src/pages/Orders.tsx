@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { orderAPI } from '../api';
 import { Order } from '../types';
 import OrderModal from '../components/OrderModal';
 import OrderDetailsModal from '../components/OrderDetailsModal';
 
 export default function Orders() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,6 +14,15 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
+
+  // Read filter from URL on mount
+  useEffect(() => {
+    const urlFilter = searchParams.get('filter');
+    if (urlFilter) {
+      setFilterType(urlFilter);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchOrders();
@@ -81,14 +92,36 @@ export default function Orders() {
     return styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800';
   };
 
-  const filteredOrders = filterStatus === 'all'
-    ? orders
-    : orders.filter(o => o.status === filterStatus);
+  const filteredOrders = orders.filter(o => {
+    // Filter by status
+    const matchesStatus = filterStatus === 'all' || o.status === filterStatus;
+    // Filter by order type
+    const matchesType = filterType === 'all' || o.orderType === filterType;
+    return matchesStatus && matchesType;
+  });
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
+          {filterType !== 'all' && (
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                Filtered by type: <span className="font-medium capitalize">{filterType}</span>
+              </span>
+              <button
+                onClick={() => {
+                  setFilterType('all');
+                  setSearchParams({});
+                }}
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                Clear filter
+              </button>
+            </div>
+          )}
+        </div>
         <button
           onClick={() => setIsCreateModalOpen(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
