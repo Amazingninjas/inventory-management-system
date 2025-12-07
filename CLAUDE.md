@@ -10,6 +10,33 @@ The system has been upgraded from a simple inventory tracker to a **full ERP man
 
 This is a PSM (Pressure Sensitive Material) manufacturing ERP system that tracks the complete production flow from raw materials through multiple work-in-progress stages to finished goods, with detailed cost accounting.
 
+## Overarching Business Goal
+
+**Mission:** Establish a business focused on AI integration services with two core competencies:
+
+1. **Building Quality Augmentation through AI**
+   - Enhance existing products, systems, and workflows with AI capabilities
+   - Focus on practical, measurable improvements to quality and efficiency
+   - Leverage AI for error detection, consistency checking, and intelligent automation
+
+2. **AI Infrastructure Integration (Local LLMs)**
+   - Specialize in deploying and integrating local/on-premises LLM solutions
+   - Provide privacy-focused AI that runs on client infrastructure
+   - Minimize cloud dependencies and recurring API costs
+   - Enable offline-capable, secure AI integrations
+
+**Strategic Alignment:**
+This inventory/ERP system serves as a foundation for demonstrating AI-augmented business operations. Future enhancements will showcase AI capabilities in quality control, intelligent forecasting, automated decision support, and process optimization. The system demonstrates full-stack development competency that will integrate with local AI models for intelligent manufacturing assistance.
+
+## Project-Specific AI Integration Opportunities
+
+- **Quality Control:** AI-powered defect detection and classification
+- **Inventory Forecasting:** Predictive analytics for stock levels and reorder points
+- **Production Optimization:** AI-driven scheduling and resource allocation
+- **Cost Variance Analysis:** Intelligent anomaly detection in production costs
+- **Document Processing:** Automated PO/invoice data extraction and validation
+- **Natural Language Queries:** Ask questions about inventory/orders in plain English
+
 **Manufacturing Process:**
 ```
 Raw Materials (Film, Adhesive, Liner, Top-coat)
@@ -258,6 +285,9 @@ When the order completes:
 - Coated Film 581-215 costPerUnit updated to $1.55
 
 This cost rolls up through subsequent stages, building the final product cost.
+- to memorize
+- to memorize
+- to memorize
 - to memorize
 - to memorize
 - to memorize
