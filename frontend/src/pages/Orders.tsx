@@ -93,11 +93,17 @@ export default function Orders() {
   };
 
   const filteredOrders = orders.filter(o => {
+    // Only show production and R&D orders on this page
+    // Other order types have their own dedicated pages
+    const isValidType = o.orderType === 'production' || o.orderType === 'r&d';
+
     // Filter by status
     const matchesStatus = filterStatus === 'all' || o.status === filterStatus;
-    // Filter by order type
+
+    // Filter by order type (if specified via URL)
     const matchesType = filterType === 'all' || o.orderType === filterType;
-    return matchesStatus && matchesType;
+
+    return isValidType && matchesStatus && matchesType;
   });
 
   return (

@@ -17,7 +17,8 @@ export default function Sales() {
   const fetchData = async () => {
     try {
       const ordersRes = await orderAPI.getAll();
-      setOrders(ordersRes.data.filter(o => o.orderType === 'sales'));
+      // Show fulfillment orders (customer sales/shipments)
+      setOrders(ordersRes.data.filter(o => o.orderType === 'fulfillment'));
     } finally {
       setLoading(false);
     }
@@ -102,25 +103,66 @@ export default function Sales() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order #</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Travel</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Labor</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer Info</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {orders.map(order => (
-              <tr key={order.id}>
-                <td className="px-6 py-4">{order.orderNumber}</td>
-                <td className="px-6 py-4">{order.status}</td>
-                <td className="px-6 py-4">${order.costs?.travelCost?.toFixed(2) || '0.00'}</td>
-                <td className="px-6 py-4">${order.costs?.laborCost?.toFixed(2) || '0.00'}</td>
-                <td className="px-6 py-4 font-medium">${order.costs?.totalCost?.toFixed(2) || '0.00'}</td>
-                <td className="px-6 py-4">
-                  {order.status === 'pending' && <button onClick={() => handleComplete(order.id)} className="text-blue-600">Complete</button>}
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  No sales orders yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.map(order => (
+                <tr key={order.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium text-blue-600">{order.orderNumber}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm">
+                      {order.inputs.length} item{order.inputs.length !== 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {order.inputs.slice(0, 2).map(i => i.productName).join(', ')}
+                      {order.inputs.length > 2 && ` +${order.inputs.length - 2} more`}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {order.notes ? (
+                      <div className="max-w-xs">
+                        {order.notes.split('|')[0].trim()}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {new Date(order.completedAt || order.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    {order.status === 'pending' && (
+                      <button
+                        onClick={() => handleComplete(order.id)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        Ship
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

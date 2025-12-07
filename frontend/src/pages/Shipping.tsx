@@ -19,7 +19,8 @@ export default function Shipping() {
   const fetchData = async () => {
     try {
       const [ordersRes, productsRes] = await Promise.all([orderAPI.getAll(), productAPI.getAll()]);
-      setOrders(ordersRes.data.filter(o => o.orderType === 'shipping'));
+      // Show fulfillment orders (customer shipments)
+      setOrders(ordersRes.data.filter(o => o.orderType === 'fulfillment'));
       setProducts(productsRes.data);
     } finally {
       setLoading(false);
@@ -128,21 +129,75 @@ export default function Shipping() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order #</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Cost</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shipping Info</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {orders.map(order => (
-              <tr key={order.id}>
-                <td className="px-6 py-4">{order.orderNumber}</td>
-                <td className="px-6 py-4">{order.status}</td>
-                <td className="px-6 py-4">${order.costs?.totalCost?.toFixed(2) || '0.00'}</td>
-                <td className="px-6 py-4">
-                  {order.status === 'pending' && <button onClick={() => handleComplete(order.id)} className="text-blue-600">Complete</button>}
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  No shipments yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.map(order => (
+                <tr key={order.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium text-blue-600">{order.orderNumber}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm">
+                      {order.inputs.reduce((sum, item) => sum + item.quantity, 0).toFixed(0)} MSI
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {order.inputs.length} product{order.inputs.length !== 1 ? 's' : ''}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    {order.notes ? (
+                      <div className="max-w-md">
+                        {/* Extract shipping info from notes */}
+                        {order.notes.includes('Ship to:') && (
+                          <div className="text-gray-900">
+                            {order.notes.split('|').find(s => s.includes('Ship to:'))?.trim()}
+                          </div>
+                        )}
+                        {order.notes.includes('Tracking:') && (
+                          <div className="text-xs text-gray-600 mt-1">
+                            {order.notes.split('|').find(s => s.includes('Tracking:'))?.trim()}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {new Date(order.completedAt || order.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    {order.status === 'pending' && (
+                      <button
+                        onClick={() => handleComplete(order.id)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        Ship
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
